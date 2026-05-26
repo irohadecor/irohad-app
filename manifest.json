@@ -1,0 +1,41 @@
+{
+  "name": "IROHAD'ECOR 業務システム",
+  "short_name": "IROHAD",
+  "description": "空間装飾 業務管理アプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2C2820",
+  "theme_color": "#2C2820",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "日報入力",
+      "short_name": "日報",
+      "description": "今日の売上・経費を入力",
+      "url": "./irohad_daily_report.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ヒアリングシート",
+      "short_name": "現調",
+      "description": "現調ヒアリングシート入力",
+      "url": "./irohad_ecor_hearing_sheet_v2.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

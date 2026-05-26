@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="IROHAD" />
+<meta name="theme-color" content="#2C2820" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<title>IROHAD'ECOR 業務システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #FAF8F4; --parchment: #F2EDE4;
+    --gold: #B8986A; --gold-light: #D4B896; --gold-dark: #8C6E42;
+    --ink: #2C2820; --ink-mid: #6B6158; --ink-light: #A09488;
+    --border: #DDD5C8;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif; font-weight: 300;
+    background: var(--ink); color: var(--cream);
+    min-height: 100vh;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  /* ヘッダー */
+  .header {
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(184,152,106,0.12) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .logo-mark { font-size: 28px; margin-bottom: 8px; opacity: 0.8; }
+  .brand { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.35em; color: var(--gold-light); text-transform: uppercase; margin-bottom: 8px; }
+  .app-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: #fff; letter-spacing: 0.06em; line-height: 1.1; }
+  .app-sub { font-size: 11px; color: var(--ink-light); letter-spacing: 0.12em; margin-top: 8px; }
+
+  /* 今日の日付 */
+  .today-strip {
+    background: rgba(184,152,106,0.1);
+    border-top: 1px solid rgba(184,152,106,0.15);
+    border-bottom: 1px solid rgba(184,152,106,0.15);
+    padding: 10px 2rem;
+    text-align: center;
+    font-size: 12px; color: var(--gold-light); letter-spacing: 0.1em;
+  }
+
+  /* メニュー */
+  .menu { padding: 1.5rem 1.5rem 2rem; display: flex; flex-direction: column; gap: 10px; max-width: 480px; margin: 0 auto; }
+
+  .menu-card {
+    display: flex; align-items: center; gap: 1rem;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 1.2rem 1.25rem;
+    text-decoration: none; color: var(--cream);
+    transition: all 0.2s; cursor: pointer;
+    -webkit-user-select: none;
+  }
+  .menu-card:active { background: rgba(255,255,255,0.09); transform: scale(0.98); }
+  .menu-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(184,152,106,0.3); }
+
+  .menu-card.primary {
+    background: rgba(184,152,106,0.15);
+    border-color: rgba(184,152,106,0.35);
+  }
+  .menu-card.primary:active { background: rgba(184,152,106,0.25); }
+
+  .menu-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+    background: rgba(255,255,255,0.06);
+  }
+  .menu-card.primary .menu-icon { background: rgba(184,152,106,0.25); }
+
+  .menu-text { flex: 1; }
+  .menu-name { font-size: 14px; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 3px; }
+  .menu-desc { font-size: 11px; color: var(--ink-light); letter-spacing: 0.04em; }
+  .menu-card.primary .menu-desc { color: var(--gold-light); }
+  .menu-arrow { color: var(--ink-light); font-size: 16px; }
+
+  /* セクション区切り */
+  .section-label {
+    font-size: 10px; letter-spacing: 0.2em; color: var(--ink-light);
+    text-transform: uppercase; padding: 0 0.25rem; margin-top: 0.5rem; margin-bottom: -2px;
+  }
+
+  /* インストール案内 */
+  .install-banner {
+    margin: 0 1.5rem 1.5rem; padding: 1rem 1.25rem;
+    background: rgba(42,95,168,0.15); border: 1px solid rgba(42,95,168,0.3);
+    border-radius: 6px; font-size: 12px; color: #A8C4F0;
+    display: none;
+  }
+  .install-banner strong { display: block; margin-bottom: 4px; font-size: 13px; color: #C8DEFF; }
+
+  /* バージョン */
+  .version { text-align: center; padding: 1.5rem; font-size: 10px; color: var(--ink-light); letter-spacing: 0.1em; }
+
+  /* オフラインバナー */
+  .offline-banner {
+    display: none; background: var(--gold-dark); color: #fff;
+    text-align: center; padding: 8px; font-size: 11px; letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<div class="offline-banner" id="offline-banner">📡 オフラインモード — データはローカルに保存されています</div>
+
+<header class="header">
+  <div class="logo-mark">✦</div>
+  <div class="brand">空間装飾 業務システム</div>
+  <h1 class="app-title">IROHAD'ECOR</h1>
+  <div class="app-sub">Powered by AI</div>
+</header>
+
+<div class="today-strip" id="today-strip">—</div>
+
+<nav class="menu">
+
+  <span class="section-label">毎日使う</span>
+
+  <a class="menu-card primary" href="irohad_daily_report.html">
+    <div class="menu-icon">📊</div>
+    <div class="menu-text">
+      <div class="menu-name">日報入力</div>
+      <div class="menu-desc">売上・経費・案件数を入力する</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card primary" href="irohad_ecor_hearing_sheet_v2.html">
+    <div class="menu-icon">📋</div>
+    <div class="menu-text">
+      <div class="menu-name">現調ヒアリングシート</div>
+      <div class="menu-desc">現場でその場で入力・AI見積もり生成</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <span class="section-label" style="margin-top:0.75rem;">経営管理</span>
+
+  <a class="menu-card" href="irohad_dashboard.html">
+    <div class="menu-icon">📈</div>
+    <div class="menu-text">
+      <div class="menu-name">月次経営ダッシュボード</div>
+      <div class="menu-desc">売上・粗利・案件数を一画面で確認</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="zaizan_mihoncho.html">
+    <div class="menu-icon">🌸</div>
+    <div class="menu-text">
+      <div class="menu-name">資材見本帳</div>
+      <div class="menu-desc">花材・素材の種類・AI雰囲気分析</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <span class="section-label" style="margin-top:0.75rem;">設定・管理</span>
+
+  <a class="menu-card" href="irohad_setup_guide.html">
+    <div class="menu-icon">⚙️</div>
+    <div class="menu-text">
+      <div class="menu-name">スプレッドシート連携設定</div>
+      <div class="menu-desc">Googleスプレッドシートへの自動蓄積設定</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+</nav>
+
+<!-- iOSインストール案内 -->
+<div class="install-banner" id="install-banner">
+  <strong>📱 ホーム画面に追加してアプリとして使えます</strong>
+  Safariの場合：画面下の「共有」ボタン →「ホーム画面に追加」をタップしてください
+</div>
+
+<div class="version" id="version-label">Ver. 1.0 · IROHAD'ECOR 業務システム</div>
+
+<script>
+  // 今日の日付
+  const d = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  document.getElementById('today-strip').textContent =
+    d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（' + days[d.getDay()] + '）';
+
+  // Service Worker 登録
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW error:', err));
+  }
+
+  // オフライン検知
+  function updateOnlineStatus() {
+    document.getElementById('offline-banner').style.display = navigator.onLine ? 'none' : 'block';
+  }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // iOSのSafariでホーム画面未追加の場合にバナー表示
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !isInStandaloneMode) {
+    document.getElementById('install-banner').style.display = 'block';
+  }
+</script>
+</body>
+</html>
