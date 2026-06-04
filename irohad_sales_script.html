@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>営業トークスクリプト — IROHAD'ECOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+JP:wght@300;400;500&family=Shippori+Mincho:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F2ECE0;--surface:#FCFAF4;--parchment:#FBF7EF;
+  --gold:#BE4128;--gold-light:#E9C6B7;--gold-dark:#8A2E1A;
+  --ink:#191512;--ink-mid:#5C5247;--ink-light:#8E8270;
+  --border:#DAD0BE;--border-light:#EDE5D4;
+  --green:#2D7A4F;--green-light:#E8F5EE;
+  --rose:#C05A6E;--rose-light:#FAEAED;
+  --blue:#3A6EA8;--blue-light:#EAF0FB;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+.header{background:var(--ink);padding:1.5rem 2rem;}
+.brand{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.3em;color:var(--gold-light);text-transform:uppercase;margin-bottom:4px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:#fff;letter-spacing:0.06em;}
+.page-sub{font-size:11px;color:var(--ink-light);margin-top:4px;}
+
+.main{max-width:760px;margin:0 auto;padding:2rem 1.5rem 5rem;}
+
+/* チャネル選択 */
+.channel-tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.ch-tab{padding:8px 18px;border:1px solid var(--border);border-radius:99px;font-size:12px;color:var(--ink-mid);cursor:pointer;background:var(--surface);transition:all 0.15s;user-select:none;}
+.ch-tab:hover{border-color:var(--gold-light);}
+.ch-tab.active{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:500;}
+
+/* フロー */
+.flow-wrap{display:flex;flex-direction:column;gap:0;}
+
+.flow-step{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;overflow:hidden;transition:all 0.2s;}
+.flow-step.active-step{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,152,106,0.12);}
+.flow-step.done-step{border-color:var(--green);background:var(--green-light);}
+.flow-step.skip-step{opacity:0.4;pointer-events:none;}
+
+.step-header{padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold);min-width:28px;line-height:1;}
+.flow-step.done-step .step-num{color:var(--green);}
+.step-title{font-size:13px;font-weight:500;color:var(--ink);flex:1;}
+.flow-step.done-step .step-title{color:var(--green);}
+.step-status{font-size:10px;color:var(--ink-light);}
+.flow-step.done-step .step-status{color:var(--green);}
+
+.step-body{padding:0 16px 16px;}
+
+/* トークテキスト */
+.talk-box{background:var(--parchment);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;padding:12px 14px;margin-bottom:10px;position:relative;}
+.talk-label{font-size:9px;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.talk-text{font-size:13px;line-height:1.85;color:var(--ink);}
+.talk-text strong{color:var(--gold-dark);font-weight:500;}
+.copy-talk-btn{position:absolute;top:8px;right:8px;background:none;border:1px solid var(--border);border-radius:2px;padding:3px 8px;font-size:10px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;}
+.copy-talk-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* プルダウン選択 */
+.choice-label{font-size:11px;letter-spacing:0.1em;color:var(--ink-light);text-transform:uppercase;margin-bottom:6px;}
+.choice-select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:300;color:var(--ink);background:var(--bg);margin-bottom:8px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A09488' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.choice-select:focus{outline:none;border-color:var(--gold);}
+
+/* 対応トーク（選択後） */
+.response-box{display:none;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 4px 4px 0;padding:12px 14px;margin-bottom:10px;}
+.response-box.show{display:block;}
+.response-label{font-size:9px;letter-spacing:0.15em;color:var(--blue);text-transform:uppercase;margin-bottom:6px;}
+.response-text{font-size:13px;line-height:1.85;color:var(--ink);}
+
+/* 次へボタン */
+.next-btn{padding:10px 24px;background:var(--gold);color:#fff;border:none;border-radius:3px;font-family:'Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;}
+.next-btn:hover{background:var(--gold-dark);}
+.next-btn:disabled{background:var(--border);cursor:not-allowed;}
+
+/* ポイント */
+.point-box{background:var(--rose-light);border-left:3px solid var(--rose);border-radius:0 4px 4px 0;padding:10px 14px;margin-bottom:10px;}
+.point-label{font-size:9px;letter-spacing:0.15em;color:var(--rose);text-transform:uppercase;margin-bottom:4px;}
+.point-text{font-size:12px;line-height:1.7;color:var(--ink);}
+
+/* リセット */
+.reset-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.progress-text{font-size:12px;color:var(--ink-light);}
+.reset-btn{padding:6px 14px;background:none;border:1px solid var(--border);border-radius:99px;font-size:11px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;}
+.reset-btn:hover{border-color:var(--rose);color:var(--rose);}
+
+/* 完了 */
+.complete-card{background:var(--ink);border-radius:6px;padding:2rem;text-align:center;display:none;}
+.complete-card.show{display:block;}
+.complete-icon{font-size:40px;margin-bottom:12px;}
+.complete-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--gold-light);margin-bottom:8px;}
+.complete-text{font-size:13px;color:#D4C9B8;line-height:1.7;margin-bottom:1.5rem;}
+.complete-next{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.complete-btn{padding:10px 20px;border-radius:3px;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.complete-btn.primary{background:var(--gold);color:#fff;border:none;}
+.complete-btn.secondary{background:none;border:1px solid rgba(255,255,255,0.2);color:#D4C9B8;}
+
+@media(max-width:640px){.main{padding:1rem 1rem 5rem;}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">IROHAD'ECOR</div>
+  <h1 class="page-title">営業トークスクリプト</h1>
+  <div class="page-sub">プルダウンで状況を選ぶと最適なトークが表示されます</div>
+</header>
+
+<main class="main">
+
+  <!-- チャネル選択 -->
+  <div class="channel-tabs" id="channel-tabs">
+    <span class="ch-tab active" onclick="setChannel('tel',this)">📞 電話・飛び込み</span>
+    <span class="ch-tab" onclick="setChannel('intro',this)">🤝 紹介・問い合わせ</span>
+    <span class="ch-tab" onclick="setChannel('sns',this)">📱 SNS・DM</span>
+  </div>
+
+  <div class="reset-bar">
+    <span class="progress-text" id="progress-text">STEP 1 / 6</span>
+    <button class="reset-btn" onclick="resetFlow()">最初からやり直す</button>
+  </div>
+
+  <div class="flow-wrap" id="flow-wrap"></div>
+  <div class="complete-card" id="complete-card">
+    <div class="complete-icon">✦</div>
+    <div class="complete-title">商談完了！次のアクションへ</div>
+    <div class="complete-text" id="complete-text"></div>
+    <div class="complete-next">
+      <button class="complete-btn primary" onclick="openHearing()">📋 ヒアリングシートを開く</button>
+      <button class="complete-btn secondary" onclick="resetFlow()">最初からやり直す</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ============================================================
+//  スクリプトデータ
+// ============================================================
+const SCRIPTS = {
+  tel: [
+    {
+      id: 1,
+      title: '第一声・つかみ',
+      talk: `お忙しいところ失礼いたします。\n空間装飾の<strong>IROHAD'ECOR</strong>と申します。\n\nイベントや展示会の空間演出を、デザインから施工まで一貫してお手伝いしている会社です。\n\n<strong>1〜2分だけお時間いただけますか？</strong>`,
+      point: '明るく・簡潔に。会社名と何をする会社かを最初の15秒で伝える。',
+      choice: {
+        label: '相手の反応は？',
+        options: ['「いまちょっと…」と断られそう', '「どんな会社ですか？」と聞いてくれた', '「うちはもう業者が決まっているので」', '「少しなら聞きます」と言ってくれた'],
+        responses: [
+          `「そうですよね、突然すみません。実は<strong>30秒だけ</strong>お伝えしたいことがあって。\nご予算・規模感に合わせて柔軟に対応できますので、もし次回イベントの際にでも候補の一つに加えていただけると嬉しいです。\nメールアドレスだけ教えていただけますか？事例集をお送りします。」`,
+          `「ありがとうございます！\n簡単に申しますと、企業の展示会・発表会・パーティーなどの空間を、<strong>花・植物・照明</strong>で演出する専門会社です。\n施工実績は年間<strong>300件以上</strong>、デザインから当日の設営・撤去まで全部お任せいただけます。」`,
+          `「そうですか、失礼しました。\nただ<strong>セカンドオピニオン</strong>として見積もりだけでも比較されてみませんか？\n費用を抑えながら品質を上げた事例も多いので、参考程度にご覧いただくだけでも。」`,
+          `「ありがとうございます！\n最近<strong>企業様の展示会・発表会</strong>のご依頼が増えていまして、先日も〇〇様のイベントを担当しました。\n御社では年間どのくらいイベントをされていますか？」`
+        ]
+      }
+    },
+    {
+      id: 2,
+      title: 'ニーズ確認',
+      talk: `ちなみに<strong>直近でイベントや展示会の予定</strong>はありますか？\n\nまたは、過去の会場装飾で「もっとこうだったら良かった」と感じたことはありましたか？`,
+      point: '質問を1つに絞る。相手に話させる。「うなずき」＋「そうなんですね」で聞く姿勢を見せる。',
+      choice: {
+        label: '相手の状況は？',
+        options: ['直近で予定あり（3ヶ月以内）', '半年〜1年後に予定あり', '予定は未定・毎年やっている', '今は特にない'],
+        responses: [
+          `「それは是非お手伝いさせてください！\n<strong>現地確認から最短3日で見積もり</strong>をお出しできます。\n一度、会場と予算感だけ教えていただけますか？」`,
+          `「ありがとうございます。\n早めにご相談いただくほど<strong>良い提案</strong>ができます。\n今のタイミングでざっくりとしたイメージだけでも聞かせていただけますか？\nイメージボードをお送りすることもできます。」`,
+          `「毎年ご担当されているんですね。\n今の業者様との比較で、<strong>一度だけ見積もりを取っていただく</strong>だけでも大丈夫です。\n昨年と同じ内容でも、コストを抑えた提案ができる場合があります。」`,
+          `「承知しました。\nでは弊社の<strong>事例集だけ</strong>お送りしてもいいですか？\nイメージが浮かんだ時に思い出していただけると嬉しいです。\nメールアドレスを教えていただけますか？」`
+        ]
+      }
+    },
+    {
+      id: 3,
+      title: '強みを伝える',
+      talk: `弊社の強みを3つだけお伝えしますね。\n\n<strong>①デザイン〜施工〜撤去まで一社完結</strong>\n複数業者の手配が不要で、担当者の負担がゼロになります。\n\n<strong>②当日トラブルゼロの実績</strong>\n専任スタッフが当日常駐し、最後まで責任を持ちます。\n\n<strong>③予算に合わせた3プラン提案</strong>\n「スタンダード・プレミアム・ラグジュアリー」から選べます。`,
+      point: '3つ以上言わない。「担当者の手間が減る」という視点で話す。数字を使って信頼感を出す。',
+      choice: {
+        label: '相手の反応は？',
+        options: ['興味を持ってくれた', 'コストが気になると言っている', 'もう少し詳しく聞きたそう', '社内で検討すると言っている'],
+        responses: [
+          `「ありがとうございます！\nでは一度、<strong>無料で現地確認と見積もり</strong>をさせていただけますか？\nお日にちはいつ頃がご都合よいですか？」`,
+          `「ご予算に合わせて柔軟に対応します。\n実は<strong>前年比20%コストダウン</strong>した事例もあります。\nまず見積もりだけ出させていただいて、高ければ断っていただいて構いません。」`,
+          `「ありがとうございます。\n実際の施工写真をお見せしながら説明した方がわかりやすいと思います。\n<strong>15〜20分だけお時間</strong>いただけますか？\nいつ頃お伺いできますか？」`,
+          `「もちろんです。\nご検討のための資料として<strong>事例集と料金の目安</strong>をお送りします。\nメールアドレスを教えていただけますか？\nいつ頃お返事いただけそうですか？」`
+        ]
+      }
+    },
+    {
+      id: 4,
+      title: 'アポイント取得',
+      talk: `一度、<strong>実際の施工事例をお見せしながら</strong>ご提案させてください。\n\n所要時間は<strong>15〜20分</strong>です。\nオンラインでも対応可能です。\n\n来週のご都合はいかがですか？`,
+      point: '「いつですか？」より「来週はどうですか？」と具体的な時期を先に提示する。オンライン選択肢も出すと断られにくい。',
+      choice: {
+        label: 'アポの結果は？',
+        options: ['日程が決まった！', '「メールで資料だけ送って」と言われた', '「また今度」と言われた', '担当者が変わると言われた'],
+        responses: [
+          `「ありがとうございます！\nそれでは<strong>〇月〇日〇時</strong>にお伺いします。\n当日は施工事例集と簡単なヒアリングシートをお持ちします。\n当日連絡先を教えていただけますか？」`,
+          `「承知しました！\n事例集と<strong>よくあるご質問・料金目安</strong>をセットでお送りします。\nご覧いただいたあと、<strong>1点だけ感想を教えていただける</strong>と嬉しいです。\nメールアドレスをお願いします。」`,
+          `「承知しました。\n<strong>1ヶ月後にまたご連絡</strong>してもよいですか？\nその頃に新しい事例もご紹介できると思います。」`,
+          `「ありがとうございます。\nご担当者様のお名前と、<strong>ご連絡先を教えていただけますか？</strong>\n改めてご挨拶させていただきます。」`
+        ]
+      }
+    },
+    {
+      id: 5,
+      title: 'クロージング',
+      talk: `本日はお時間いただきありがとうございます。\n\n<strong>次のステップ</strong>として、\n①現地確認のご予約\n②ヒアリングシートへの記入\nをお願いできますか？\n\nここから<strong>最短5営業日で見積もり</strong>をお出しできます。`,
+      point: '「ありがとうございました」で終わらない。必ず「次のアクション」を明確にして終わる。',
+      choice: {
+        label: '最終的な結果は？',
+        options: ['ヒアリング・現調に進めた', '見積もり依頼をもらえた', '資料送付で様子見', '今回は見送り'],
+        responses: [
+          `「ありがとうございます！\nでは<strong>ヒアリングシート</strong>にご記入いただきながら、現地の詳細を確認させてください。\n素敵な空間を一緒に作りましょう！」`,
+          `「ありがとうございます！\n<strong>3営業日以内</strong>に見積もりをお送りします。\n不明な点があればいつでもご連絡ください。」`,
+          `「承知しました。\n資料をお送りしますので、<strong>1週間後にご感想を伺って</strong>もよいですか？」`,
+          `「承知しました。\nまたご縁があればぜひよろしくお願いします。\n事例集だけ置かせていただいてもよいですか？」`
+        ]
+      }
+    }
+  ],
+
+  intro: [
+    {
+      id: 1,
+      title: '感謝・つかみ',
+      talk: `お問い合わせ（ご紹介）いただきありがとうございます。\n<strong>IROHAD'ECOR</strong>の〇〇と申します。\n\n早速ですが、<strong>どのようなイベントをお考えですか？</strong>\nざっくりとしたイメージで構いません。`,
+      point: '紹介・問い合わせ経由は「すでに興味あり」の状態。まず相手に話させる。',
+      choice: {
+        label: '相手のご要望は？',
+        options: ['具体的なイメージがある', 'まだぼんやりしている', '予算が決まっている', '他社と比較中'],
+        responses: [
+          `「素敵なイメージですね！\nそれを実現するために、<strong>一度現地を拝見させてください。</strong>\n現地確認から<strong>最短3日で見積もり</strong>をお出しできます。」`,
+          `「大丈夫です！\nざっくりとした<strong>雰囲気・予算・日程</strong>の3つが決まれば、こちらでプロのご提案ができます。\nまず日程と会場を教えていただけますか？」`,
+          `「ご予算に合わせて<strong>3つのプラン</strong>をご提案します。\nスタンダード・プレミアム・ラグジュアリーから選んでいただけます。\nまず現地を見せていただけますか？」`,
+          `「もちろんです。\n比較検討は大歓迎です。\n弊社の強みは<strong>デザイン〜施工〜撤去の一社完結</strong>と、当日の専任スタッフ常駐です。\n一度見積もりだけ出させてください。」`
+        ]
+      }
+    },
+    {
+      id: 2,
+      title: 'ヒアリング',
+      talk: `もう少し詳しく教えてください。\n\n・<strong>イベントの種類</strong>（展示会・パーティー・ウェディングなど）\n・<strong>開催日程・会場</strong>\n・<strong>ご予算の目安</strong>\n\nこの3つがわかると、すぐにご提案できます。`,
+      point: '質問は3つまで。メモしながら聞く姿勢を見せる。「ご予算」は早めに確認する。',
+      choice: {
+        label: '3つの情報は揃いましたか？',
+        options: ['日程・会場・予算が揃った', '日程だけ決まっている', '予算が未定', 'まだ企画段階'],
+        responses: [
+          `「ありがとうございます！\nでは<strong>現地確認の日程</strong>を調整させてください。\n来週のご都合はいかがですか？」`,
+          `「日程が決まっているなら<strong>早めに動いた方が良い</strong>です。\n会場が決まり次第すぐにご連絡ください。仮押さえで対応できます。」`,
+          `「予算は後からでも大丈夫です。\nまず<strong>イメージ優先のご提案</strong>をして、その後予算に合わせて調整します。\n現地を見せていただけますか？」`,
+          `「企画段階からご相談いただけると、<strong>よりご要望に沿った提案</strong>ができます。\nまずイメージボードをお送りしましょうか？\nメールアドレスを教えてください。」`
+        ]
+      }
+    },
+    {
+      id: 3,
+      title: 'アポ・現調設定',
+      talk: `ありがとうございます。\nでは<strong>現地確認</strong>に伺わせてください。\n\n当日は会場の寸法・搬入口・照明環境を確認して、\n<strong>具体的なイメージ提案</strong>をお持ちします。\n\n所要時間は<strong>30〜45分</strong>です。`,
+      point: '現調はできるだけ早く。現調に来れば受注確率が大幅に上がる。',
+      choice: {
+        label: '現調の日程は？',
+        options: ['日程が決まった！', 'もう少し先でないと難しい', 'オンラインで対応してほしい', 'ヒアリングシートを先に送ってほしい'],
+        responses: [
+          `「ありがとうございます！\n当日は<strong>ヒアリングシート</strong>にご記入いただきながら確認します。\nとても楽しみにしております！」`,
+          `「承知しました。\n<strong>〇ヶ月前から準備を始める</strong>と余裕を持って進められます。\n日程が決まり次第ご連絡ください。」`,
+          `「もちろんです。\nオンラインで会場の写真・図面を共有いただきながら進めましょう。\n<strong>Zoom/Google Meetどちらでも対応</strong>できます。」`,
+          `「承知しました。\nヒアリングシートをお送りします。\n<strong>ご記入いただいた内容をもとにご提案</strong>しますね。\nメールアドレスをお願いします。」`
+        ]
+      }
+    }
+  ],
+
+  sns: [
+    {
+      id: 1,
+      title: 'DM・初回メッセージ',
+      talk: `はじめまして。\n空間装飾の<strong>IROHAD'ECOR</strong>と申します。\n\n〇〇様の投稿を拝見して、ぜひご一緒できればと思いDMさせていただきました。\n\n弊社は企業イベント・展示会・パーティーなどの<strong>空間演出を専門</strong>にしております。\nもしご興味があれば、事例集をお送りしてもよいですか？`,
+      point: 'なぜDMしたかを最初に伝える。事例集の送付許可を取ることがゴール。いきなり売り込まない。',
+      choice: {
+        label: '相手の反応は？',
+        options: ['「見てみたいです」と返信が来た', '既読スルー', '「今は必要ないです」', '「どんな会社ですか？」と聞いてくれた'],
+        responses: [
+          `「ありがとうございます！\nでは事例集をお送りします。\nよろしければ<strong>メールアドレス</strong>を教えていただけますか？\nまたはDMでもお送りできます。」`,
+          `3日後に再度DM：\n「先日DMをお送りしたIROHAD'ECORです。\n最近<strong>〇〇様のような企業様からのご依頼</strong>が増えていて、事例集だけでもご覧いただければ嬉しいです。」`,
+          `「承知しました。失礼しました。\nもし今後イベントのご予定ができた際には、<strong>候補の一つ</strong>に加えていただけると嬉しいです。\nフォローさせていただいてもよいですか？」`,
+          `「ありがとうございます！\nひと言で言うと、<strong>花・植物・照明で空間を作る専門会社</strong>です。\nデザインから当日の施工・撤去まで一社で対応します。\n事例をご覧いただけますか？」`
+        ]
+      }
+    },
+    {
+      id: 2,
+      title: '事例紹介・温め',
+      talk: `事例集をご覧いただきありがとうございます。\n\n特に気になった事例はありましたか？\n\nご予算・規模感・雰囲気など、<strong>何でもご相談ください。</strong>\nまずはざっくりとしたイメージだけでも教えていただけると、\nより具体的なご提案ができます。`,
+      point: 'SNS経由は「温め」が大事。急かさず、相手のペースに合わせる。',
+      choice: {
+        label: '相手の反応は？',
+        options: ['具体的な相談が来た', 'いいねや「素敵」などの反応', '予算を聞いてきた', 'まだ様子見'],
+        responses: [
+          `「ありがとうございます！\nぜひ詳しく聞かせてください。\n<strong>オンラインで30分</strong>お話しできますか？\nご都合の良い日時を教えてください。」`,
+          `「ありがとうございます！\nもしよろしければ<strong>弊社のアカウントをフォロー</strong>いただけると、\n最新事例を定期的にお届けできます。」`,
+          `「ご予算に合わせた<strong>3つのプラン</strong>をご提案できます。\nまずざっくりと、どのくらいのイメージですか？\n小規模（〜30万）・中規模（30〜100万）・大規模（100万〜）で分けるとイメージしやすいです。」`,
+          `「ありがとうございます。\nまた何かあればいつでもDMください。\n<strong>年間300件以上</strong>の実績がありますので、どんなご要望にも対応できます。」`
+        ]
+      }
+    }
+  ]
+};
+
+// ============================================================
+//  状態管理
+// ============================================================
+let currentChannel = 'tel';
+let currentStepIndex = 0;
+let steps = [];
+
+function setChannel(ch, btn){
+  currentChannel = ch;
+  document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  resetFlow();
+}
+
+function resetFlow(){
+  steps = SCRIPTS[currentChannel];
+  currentStepIndex = 0;
+  document.getElementById('complete-card').classList.remove('show');
+  renderFlow();
+}
+
+function renderFlow(){
+  const wrap = document.getElementById('flow-wrap');
+  wrap.innerHTML = '';
+  document.getElementById('progress-text').textContent = `STEP ${currentStepIndex + 1} / ${steps.length}`;
+
+  steps.forEach((step, i) => {
+    const div = document.createElement('div');
+    div.className = 'flow-step' +
+      (i === currentStepIndex ? ' active-step' : '') +
+      (i < currentStepIndex ? ' done-step' : '') +
+      (i > currentStepIndex ? ' skip-step' : '');
+    div.id = 'step-' + i;
+
+    div.innerHTML = `
+      <div class="step-header">
+        <span class="step-num">${i < currentStepIndex ? '✓' : i + 1}</span>
+        <span class="step-title">${step.title}</span>
+        <span class="step-status">${i < currentStepIndex ? '完了' : i === currentStepIndex ? '進行中' : '待機中'}</span>
+      </div>
+      ${i <= currentStepIndex ? `
+      <div class="step-body">
+        <div class="talk-box">
+          <div class="talk-label">トーク例</div>
+          <button class="copy-talk-btn" onclick="copyTalk(${i})">コピー</button>
+          <div class="talk-text">${step.talk.replace(/\n/g,'<br/>')}</div>
+        </div>
+        ${step.point ? `<div class="point-box"><div class="point-label">💡 ポイント</div><div class="point-text">${step.point}</div></div>` : ''}
+        ${i === currentStepIndex && step.choice ? `
+          <div class="choice-label">▼ 相手の反応を選んでください</div>
+          <select class="choice-select" id="choice-${i}" onchange="showResponse(${i})">
+            <option value="">選択してください</option>
+            ${step.choice.options.map((o,j) => `<option value="${j}">${o}</option>`).join('')}
+          </select>
+          <div class="response-box" id="response-${i}">
+            <div class="response-label">📢 この場合のトーク</div>
+            <div class="response-text" id="response-text-${i}"></div>
+          </div>
+          <button class="next-btn" id="next-btn-${i}" onclick="nextStep(${i})" disabled style="margin-top:12px;">次のステップへ →</button>
+        ` : ''}
+      </div>` : ''}
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+function showResponse(stepIdx){
+  const sel = document.getElementById('choice-' + stepIdx);
+  const val = sel.value;
+  const respBox = document.getElementById('response-' + stepIdx);
+  const respText = document.getElementById('response-text-' + stepIdx);
+  const nextBtn = document.getElementById('next-btn-' + stepIdx);
+
+  if(val === ''){
+    respBox.classList.remove('show');
+    nextBtn.disabled = true;
+    return;
+  }
+
+  const step = steps[stepIdx];
+  respText.innerHTML = step.choice.responses[parseInt(val)].replace(/\n/g,'<br/>');
+  respBox.classList.add('show');
+  nextBtn.disabled = false;
+}
+
+function nextStep(i){
+  if(i >= steps.length - 1){
+    // 完了
+    document.getElementById('flow-wrap').style.display = 'none';
+    const card = document.getElementById('complete-card');
+    card.classList.add('show');
+    document.getElementById('complete-text').innerHTML =
+      `お疲れ様でした！<br>次は<strong>ヒアリングシート</strong>に進んでください。<br>現調・見積もりに向けて詳細を確認しましょう。`;
+    return;
+  }
+  currentStepIndex = i + 1;
+  document.getElementById('progress-text').textContent = `STEP ${currentStepIndex + 1} / ${steps.length}`;
+  renderFlow();
+  // スクロール
+  setTimeout(() => {
+    const el = document.getElementById('step-' + currentStepIndex);
+    if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function copyTalk(i){
+  const el = document.querySelector('#step-' + i + ' .talk-text');
+  if(!el) return;
+  navigator.clipboard.writeText(el.innerText).then(() => alert('コピーしました'));
+}
+
+function openHearing(){
+  window.location.href = 'irohad_ecor_hearing_sheet_v2.html';
+}
+
+// 初期化
+resetFlow();
+</script>
+</body>
+</html>
