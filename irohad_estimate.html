@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>見積もり自動システム — IROHAD'ECOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+JP:wght@300;400;500&family=Shippori+Mincho:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F2ECE0;--surface:#FCFAF4;--parchment:#FBF7EF;
+  --gold:#BE4128;--gold-light:#E9C6B7;--gold-dark:#8A2E1A;
+  --ink:#191512;--ink-mid:#5C5247;--ink-light:#8E8270;
+  --border:#DAD0BE;--border-light:#EDE5D4;
+  --green:#2D7A4F;--green-light:#E8F5EE;
+  --rose:#C05A6E;--rose-light:#FAEAED;
+  --blue:#3A6EA8;--blue-light:#EAF0FB;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+.header{background:var(--ink);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.header-left{display:flex;align-items:baseline;gap:10px;}
+.brand{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.3em;color:var(--gold-light);text-transform:uppercase;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:0.06em;}
+.case-id{font-size:11px;color:var(--gold-light);letter-spacing:0.1em;}
+
+.tabs{display:flex;background:var(--parchment);border-bottom:1px solid var(--border);overflow-x:auto;}
+.tab{padding:11px 18px;font-size:12px;letter-spacing:0.08em;color:var(--ink-light);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.tab.active{color:var(--ink);border-bottom-color:var(--gold);font-weight:500;}
+
+.main{max-width:860px;margin:0 auto;padding:1.5rem;}
+.view{display:none;}.view.active{display:block;}
+
+/* ステップ */
+.steps{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.step{flex:1;padding:10px 8px;text-align:center;font-size:11px;color:var(--ink-light);border-right:1px solid var(--border);cursor:pointer;transition:all 0.2s;background:var(--surface);}
+.step:last-child{border-right:none;}
+.step.active{background:var(--gold);color:#fff;font-weight:500;}
+.step.done{background:var(--green-light);color:var(--green);}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:18px;display:block;line-height:1;}
+
+/* カード */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:1rem;overflow:hidden;}
+.card-header{padding:1rem 1.25rem;background:var(--parchment);border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;}
+.card-title{font-size:13px;font-weight:500;letter-spacing:0.06em;color:var(--ink);}
+.card-body{padding:1.25rem;}
+
+/* フォーム */
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.field-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.field label{display:block;font-size:10px;letter-spacing:0.12em;color:var(--ink-light);text-transform:uppercase;margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:3px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:300;color:var(--ink);background:var(--bg);transition:all 0.15s;}
+.field input[type="number"]{font-family:'Cormorant Garamond',serif;font-size:16px;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,152,106,0.1);}
+.field textarea{resize:vertical;min-height:60px;}
+.unit-wrap{position:relative;}
+.unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--ink-light);pointer-events:none;}
+
+/* 資材行 */
+.material-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.material-row{display:grid;grid-template-columns:2fr 1fr 1fr 80px 28px;gap:6px;align-items:center;}
+.material-row input,.material-row select{padding:7px 10px;border:1px solid var(--border);border-radius:3px;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:300;color:var(--ink);background:var(--bg);}
+.material-row input[type="number"]{font-family:'Cormorant Garamond',serif;font-size:14px;}
+.material-row input:focus,.material-row select:focus{outline:none;border-color:var(--gold);}
+.row-total{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--ink);text-align:right;padding-right:4px;}
+.del-row-btn{background:none;border:1px solid var(--border);color:var(--ink-light);border-radius:3px;width:28px;height:32px;cursor:pointer;font-size:14px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.del-row-btn:hover{border-color:var(--rose);color:var(--rose);}
+.add-row-btn{padding:7px 14px;background:none;border:1px dashed var(--border);border-radius:3px;font-size:12px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;width:100%;}
+.add-row-btn:hover{border-color:var(--gold);color:var(--gold);}
+.material-header{display:grid;grid-template-columns:2fr 1fr 1fr 80px 28px;gap:6px;margin-bottom:4px;}
+.material-header span{font-size:10px;letter-spacing:0.1em;color:var(--ink-light);text-transform:uppercase;}
+
+/* 合計パネル */
+.total-panel{background:var(--ink);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.total-row:last-child{border-bottom:none;}
+.total-label{font-size:12px;color:var(--gold-light);letter-spacing:0.06em;}
+.total-val{font-family:'Cormorant Garamond',serif;font-size:18px;color:#fff;}
+.total-row.grand{padding-top:12px;margin-top:4px;border-top:1px solid rgba(255,255,255,0.15);border-bottom:none;}
+.total-row.grand .total-label{font-size:13px;color:var(--gold);}
+.total-row.grand .total-val{font-size:28px;color:var(--gold);}
+.margin-bar{margin-top:10px;}
+.margin-label{font-size:10px;color:var(--ink-light);letter-spacing:0.1em;margin-bottom:4px;display:flex;justify-content:space-between;}
+.margin-track{height:5px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;}
+.margin-fill{height:100%;border-radius:99px;transition:width 0.4s;}
+
+/* プラン切り替え */
+.plan-tabs{display:flex;gap:6px;margin-bottom:1rem;}
+.plan-tab{padding:7px 16px;border:1px solid var(--border);border-radius:99px;font-size:12px;color:var(--ink-light);cursor:pointer;transition:all 0.15s;background:var(--surface);}
+.plan-tab.active{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:500;}
+
+/* AI提案 */
+.ai-panel{background:rgba(184,152,106,0.06);border:1px solid rgba(184,152,106,0.2);border-radius:4px;padding:1.25rem;margin-bottom:1rem;}
+.ai-panel-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ai-panel-title{font-size:13px;color:var(--gold-dark);font-weight:500;letter-spacing:0.06em;}
+.ai-gen-btn{margin-left:auto;padding:6px 16px;background:var(--gold);color:#fff;border:none;border-radius:2px;font-size:11px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.ai-gen-btn:hover{background:var(--gold-dark);}
+.ai-output{font-size:13px;line-height:1.85;color:var(--ink);white-space:pre-wrap;}
+.ai-loading{display:none;align-items:center;gap:10px;color:var(--gold);font-size:12px;}
+.dots span{display:inline-block;width:5px;height:5px;background:var(--gold);border-radius:50%;animation:dp 1.2s ease-in-out infinite;margin:0 2px;}
+.dots span:nth-child(2){animation-delay:0.2s}.dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dp{0%,80%,100%{transform:scale(0.5);opacity:0.4}40%{transform:scale(1);opacity:1}}
+
+/* 出力ボタン */
+.action-row{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-primary{padding:11px 24px;background:var(--gold);color:#fff;border:none;border-radius:3px;font-size:13px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;transition:all 0.2s;letter-spacing:0.06em;}
+.btn-primary:hover{background:var(--gold-dark);}
+.btn-secondary{padding:11px 18px;background:none;border:1px solid var(--border);border-radius:3px;font-size:12px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold);}
+
+/* 履歴 */
+.history-table{width:100%;border-collapse:collapse;font-size:12px;}
+.history-table th{font-size:10px;letter-spacing:0.1em;color:var(--ink-light);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;font-weight:400;background:var(--parchment);}
+.history-table td{padding:10px 12px;border-bottom:1px solid var(--border-light);vertical-align:middle;}
+.history-table tr:hover td{background:var(--parchment);}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;}
+.status-draft{background:var(--border-light);color:var(--ink-light);}
+.status-sent{background:var(--blue-light);color:var(--blue);}
+.status-approved{background:var(--green-light);color:var(--green);}
+
+@media(max-width:640px){
+  .main{padding:1rem;}
+  .field-grid,.field-grid-3{grid-template-columns:1fr;}
+  .material-row{grid-template-columns:1fr 1fr;gap:4px;}
+  .material-row .row-total,.material-row .del-row-btn{display:none;}
+  .steps{flex-wrap:wrap;}
+  .step{flex:0 0 50%;}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <span class="brand">IROHAD'ECOR</span>
+    <span class="page-title">見積もり自動システム</span>
+  </div>
+  <span class="case-id" id="case-id-disp"></span>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('estimate',this)">✦ 見積もり作成</button>
+  <button class="tab" onclick="switchTab('history',this)">📁 保存済み一覧</button>
+</div>
+
+<main class="main">
+
+  <!-- ===== 見積もり作成 ===== -->
+  <div class="view active" id="view-estimate">
+
+    <!-- ステップ表示 -->
+    <div class="steps">
+      <div class="step active" onclick="goStep(1)"><span class="step-num">1</span>基本情報</div>
+      <div class="step" onclick="goStep(2)"><span class="step-num">2</span>資材費</div>
+      <div class="step" onclick="goStep(3)"><span class="step-num">3</span>施工費</div>
+      <div class="step" onclick="goStep(4)"><span class="step-num">4</span>諸経費</div>
+      <div class="step" onclick="goStep(5)"><span class="step-num">5</span>確認・出力</div>
+    </div>
+
+    <!-- STEP 1: 基本情報 -->
+    <div id="step1">
+      <div class="card">
+        <div class="card-header"><span class="card-title">📋 基本情報</span></div>
+        <div class="card-body">
+          <div class="field-grid">
+            <div class="field"><label>案件名</label><input type="text" id="e-name" placeholder="例：〇〇様ウェディング装飾"/></div>
+            <div class="field"><label>クライアント名</label><input type="text" id="e-client" placeholder="例：山田 花子 様"/></div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>イベント種別</label>
+              <select id="e-type">
+                <option value="">選択してください</option>
+                <option>ウェディング</option>
+                <option>誕生日パーティー</option>
+                <option>企業イベント</option>
+                <option>展示会・ポップアップ</option>
+                <option>記念日・アニバーサリー</option>
+                <option>その他</option>
+              </select>
+            </div>
+            <div class="field"><label>施工予定日</label><input type="date" id="e-date"/></div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>会場名</label><input type="text" id="e-venue" placeholder="例：グランドハイアット東京"/></div>
+            <div class="field"><label>担当スタッフ</label><input type="text" id="e-staff" placeholder="例：田中"/></div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label>空間サイズ（㎡）</label>
+              <div class="unit-wrap"><input type="number" id="e-size" placeholder="0" min="0"/><span class="unit">㎡</span></div>
+            </div>
+            <div class="field">
+              <label>顧客予算（円）</label>
+              <div class="unit-wrap"><input type="number" id="e-budget" placeholder="0" min="0"/><span class="unit">円</span></div>
+            </div>
+          </div>
+          <div class="field"><label>テーマ・イメージ</label><input type="text" id="e-theme" placeholder="例：ナチュラルウェディング・グリーン多め"/></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn-primary" onclick="goStep(2)">次へ：資材費 →</button>
+        <button class="btn-secondary" onclick="aiSuggestMaterials()">✦ AIに資材を提案してもらう</button>
+      </div>
+      <div class="ai-panel" style="margin-top:1rem;">
+        <div class="ai-panel-header">
+          <span style="color:var(--gold);font-size:14px;">✦</span>
+          <span class="ai-panel-title">AI 資材・金額提案</span>
+        </div>
+        <div class="ai-loading" id="ai-suggest-loading"><div class="dots"><span></span><span></span><span></span></div>提案を生成しています…</div>
+        <div class="ai-output" id="ai-suggest-output" style="font-size:12px;color:var(--ink-light);">基本情報を入力してから「AIに資材を提案してもらう」を押してください。</div>
+      </div>
+    </div>
+
+    <!-- STEP 2: 資材費 -->
+    <div id="step2" style="display:none;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">🌸 資材費</span></div>
+        <div class="card-body">
+          <div class="material-header">
+            <span>資材名</span><span>単価（円）</span><span>数量</span><span>小計</span><span></span>
+          </div>
+          <div class="material-rows" id="material-rows"></div>
+          <button class="add-row-btn" onclick="addMaterialRow()">＋ 資材を追加</button>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:var(--ink-light);">資材費 合計</span>
+            <span style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);" id="material-total">0 円</span>
+          </div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goStep(1)">← 戻る</button>
+        <button class="btn-primary" onclick="goStep(3)">次へ：施工費 →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: 施工費 -->
+    <div id="step3" style="display:none;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">🔨 施工費</span></div>
+        <div class="card-body">
+          <div class="field-grid">
+            <div class="field"><label>スタッフ人数</label><div class="unit-wrap"><input type="number" id="e-workers" value="2" min="1" oninput="calcConstruction()"/><span class="unit">名</span></div></div>
+            <div class="field"><label>作業日数</label><div class="unit-wrap"><input type="number" id="e-days" value="1" min="1" oninput="calcConstruction()"/><span class="unit">日</span></div></div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>1名1日あたりの人工費（円）</label><div class="unit-wrap"><input type="number" id="e-labor-unit" value="25000" min="0" oninput="calcConstruction()"/><span class="unit">円</span></div></div>
+            <div class="field"><label>施工費 合計（自動計算）</label><div class="unit-wrap"><input type="number" id="e-labor-total" readonly style="background:var(--parchment);color:var(--gold-dark);"/><span class="unit">円</span></div></div>
+          </div>
+          <div class="field"><label>施工費 備考</label><input type="text" id="e-labor-note" placeholder="例：撤去作業含む・深夜割増あり"/></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goStep(2)">← 戻る</button>
+        <button class="btn-primary" onclick="goStep(4)">次へ：諸経費 →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: 諸経費 -->
+    <div id="step4" style="display:none;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">📦 諸経費</span></div>
+        <div class="card-body">
+          <div class="field-grid">
+            <div class="field"><label>搬入・搬出費（円）</label><div class="unit-wrap"><input type="number" id="e-delivery" value="0" min="0" oninput="calcTotal()"/><span class="unit">円</span></div></div>
+            <div class="field"><label>交通費（円）</label><div class="unit-wrap"><input type="number" id="e-transport" value="0" min="0" oninput="calcTotal()"/><span class="unit">円</span></div></div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>デザイン料（円）</label><div class="unit-wrap"><input type="number" id="e-design-fee" value="0" min="0" oninput="calcTotal()"/><span class="unit">円</span></div></div>
+            <div class="field"><label>その他経費（円）</label><div class="unit-wrap"><input type="number" id="e-other" value="0" min="0" oninput="calcTotal()"/><span class="unit">円</span></div></div>
+          </div>
+          <div class="field"><label>諸経費 備考</label><input type="text" id="e-misc-note" placeholder="例：レンタル資材費・廃棄費用含む"/></div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:var(--ink-light);">諸経費 合計</span>
+            <span style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);" id="misc-total">0 円</span>
+          </div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goStep(3)">← 戻る</button>
+        <button class="btn-primary" onclick="goStep(5)">確認・出力へ →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: 確認・出力 -->
+    <div id="step5" style="display:none;">
+
+      <div class="plan-tabs">
+        <button class="plan-tab active" onclick="setPlan(1,this)">標準プラン</button>
+        <button class="plan-tab" onclick="setPlan(0.8,this)">抑えプラン（−20%）</button>
+        <button class="plan-tab" onclick="setPlan(1.25,this)">プレミアム（＋25%）</button>
+      </div>
+
+      <div class="total-panel" id="total-panel"></div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">📄 見積もり内訳</span></div>
+        <div class="card-body" id="breakdown-body" style="font-size:13px;line-height:2;"></div>
+      </div>
+
+      <div class="ai-panel">
+        <div class="ai-panel-header">
+          <span style="color:var(--gold);font-size:14px;">✦</span>
+          <span class="ai-panel-title">AI 見積もりコメント自動生成</span>
+          <button class="ai-gen-btn" onclick="generateComment()">生成する</button>
+        </div>
+        <div class="ai-loading" id="ai-comment-loading"><div class="dots"><span></span><span></span><span></span></div>生成しています…</div>
+        <div class="ai-output" id="ai-comment-output" style="font-size:12px;color:var(--ink-light);">「生成する」を押すと顧客向けの見積もりコメントを自動生成します。</div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goStep(4)">← 戻る</button>
+        <button class="btn-primary" onclick="saveEstimate()">💾 保存する</button>
+        <button class="btn-secondary" onclick="printEstimate()">🖨 印刷・PDF</button>
+        <button class="btn-secondary" onclick="copyText()">📋 テキストコピー</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 保存済み一覧 ===== -->
+  <div class="view" id="view-history">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>案件番号</th><th>案件名</th><th>クライアント</th><th>種別</th><th>合計金額</th><th>ステータス</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="history-tbody">
+          <tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--ink-light);">保存済みの見積もりはありません</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ============================================================
+//  案件番号
+// ============================================================
+function genCaseId(){
+  const d=new Date();
+  const yy=String(d.getFullYear()).slice(2);
+  const mm=String(d.getMonth()+1).padStart(2,'0');
+  const dd=String(d.getDate()).padStart(2,'0');
+  let seq=1;
+  try{
+    const lastDate=localStorage.getItem('irohad_est_last_date');
+    const today=yy+mm+dd;
+    if(lastDate===today){ seq=(parseInt(localStorage.getItem('irohad_est_seq')||'0')+1); }
+    localStorage.setItem('irohad_est_last_date',today);
+    localStorage.setItem('irohad_est_seq',seq);
+  }catch(e){}
+  return 'EST-'+yy+mm+dd+'-'+String(seq).padStart(3,'0');
+}
+const CASE_ID = genCaseId();
+document.getElementById('case-id-disp').textContent = CASE_ID;
+
+// ============================================================
+//  ステップ管理
+// ============================================================
+let currentStep=1;
+let planMultiplier=1;
+
+function goStep(n){
+  currentStep=n;
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById('step'+i);
+    if(el) el.style.display=(i===n)?'block':'none';
+  }
+  document.querySelectorAll('.step').forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i+1===n) s.classList.add('active');
+    else if(i+1<n) s.classList.add('done');
+  });
+  if(n===5) renderSummary();
+}
+
+// ============================================================
+//  資材行
+// ============================================================
+const DEFAULT_MATERIALS=[
+  {name:'メイン花材（バラ）',price:3000,qty:30},
+  {name:'グリーン（ユーカリ）',price:500,qty:20},
+  {name:'脇花材',price:800,qty:15},
+];
+
+function initMaterials(){
+  const wrap=document.getElementById('material-rows');
+  wrap.innerHTML='';
+  DEFAULT_MATERIALS.forEach(m=>addMaterialRow(m.name,m.price,m.qty));
+}
+
+function addMaterialRow(name='',price='',qty=''){
+  const id='mr'+Date.now()+Math.random();
+  const row=document.createElement('div');
+  row.className='material-row';
+  row.id=id;
+  row.innerHTML=`
+    <input type="text" placeholder="資材名" value="${name}" oninput="calcMaterials()"/>
+    <input type="number" placeholder="単価" value="${price}" min="0" oninput="calcMaterials()"/>
+    <input type="number" placeholder="数量" value="${qty}" min="0" oninput="calcMaterials()"/>
+    <div class="row-total" id="rt-${id}">—</div>
+    <button class="del-row-btn" onclick="document.getElementById('${id}').remove();calcMaterials();">×</button>
+  `;
+  document.getElementById('material-rows').appendChild(row);
+  calcMaterials();
+}
+
+function calcMaterials(){
+  let total=0;
+  document.querySelectorAll('.material-row').forEach(row=>{
+    const inputs=row.querySelectorAll('input[type="number"]');
+    const price=parseFloat(inputs[0]?.value)||0;
+    const qty=parseFloat(inputs[1]?.value)||0;
+    const sub=price*qty;
+    total+=sub;
+    const rt=row.querySelector('[id^="rt-"]');
+    if(rt) rt.textContent=sub>0?sub.toLocaleString()+'円':'—';
+  });
+  document.getElementById('material-total').textContent=total.toLocaleString()+' 円';
+  calcTotal();
+}
+
+function getMaterialTotal(){
+  let total=0;
+  document.querySelectorAll('.material-row').forEach(row=>{
+    const inputs=row.querySelectorAll('input[type="number"]');
+    const price=parseFloat(inputs[0]?.value)||0;
+    const qty=parseFloat(inputs[1]?.value)||0;
+    total+=price*qty;
+  });
+  return total;
+}
+
+// ============================================================
+//  施工費計算
+// ============================================================
+function calcConstruction(){
+  const workers=parseFloat(document.getElementById('e-workers')?.value)||0;
+  const days=parseFloat(document.getElementById('e-days')?.value)||0;
+  const unit=parseFloat(document.getElementById('e-labor-unit')?.value)||0;
+  const total=workers*days*unit;
+  document.getElementById('e-labor-total').value=total;
+  calcTotal();
+}
+
+// ============================================================
+//  諸経費・合計
+// ============================================================
+function calcTotal(){
+  const delivery=parseFloat(document.getElementById('e-delivery')?.value)||0;
+  const transport=parseFloat(document.getElementById('e-transport')?.value)||0;
+  const design=parseFloat(document.getElementById('e-design-fee')?.value)||0;
+  const other=parseFloat(document.getElementById('e-other')?.value)||0;
+  const misc=delivery+transport+design+other;
+  const el=document.getElementById('misc-total');
+  if(el) el.textContent=misc.toLocaleString()+' 円';
+}
+
+function getTotals(){
+  const material=getMaterialTotal();
+  const labor=parseFloat(document.getElementById('e-labor-total')?.value)||0;
+  const delivery=parseFloat(document.getElementById('e-delivery')?.value)||0;
+  const transport=parseFloat(document.getElementById('e-transport')?.value)||0;
+  const design=parseFloat(document.getElementById('e-design-fee')?.value)||0;
+  const other=parseFloat(document.getElementById('e-other')?.value)||0;
+  const misc=delivery+transport+design+other;
+  const subtotal=material+labor+misc;
+  const tax=Math.round(subtotal*0.1);
+  const total=subtotal+tax;
+  return {material,labor,misc,delivery,transport,design,other,subtotal,tax,total};
+}
+
+function setPlan(mult,btn){
+  planMultiplier=mult;
+  document.querySelectorAll('.plan-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderSummary();
+}
+
+// ============================================================
+//  サマリー描画
+// ============================================================
+function renderSummary(){
+  const t=getTotals();
+  const m=planMultiplier;
+  const budget=parseFloat(document.getElementById('e-budget')?.value)||0;
+
+  const matM=Math.round(t.material*m);
+  const labM=Math.round(t.labor*m);
+  const misM=Math.round(t.misc*m);
+  const sub=matM+labM+misM;
+  const tax=Math.round(sub*0.1);
+  const total=sub+tax;
+  const margin=budget>0?Math.round((budget-total)/budget*100):0;
+  const profitRate=sub>0?Math.round((sub-matM)/sub*100):0;
+
+  document.getElementById('total-panel').innerHTML=`
+    <div class="total-row"><span class="total-label">資材費</span><span class="total-val">${matM.toLocaleString()} 円</span></div>
+    <div class="total-row"><span class="total-label">施工費</span><span class="total-val">${labM.toLocaleString()} 円</span></div>
+    <div class="total-row"><span class="total-label">諸経費</span><span class="total-val">${misM.toLocaleString()} 円</span></div>
+    <div class="total-row"><span class="total-label">小計</span><span class="total-val">${sub.toLocaleString()} 円</span></div>
+    <div class="total-row"><span class="total-label">消費税（10%）</span><span class="total-val">${tax.toLocaleString()} 円</span></div>
+    <div class="total-row grand"><span class="total-label">✦ 合計金額</span><span class="total-val">${total.toLocaleString()} 円</span></div>
+    ${budget>0?`<div class="margin-bar">
+      <div class="margin-label"><span>顧客予算 ${budget.toLocaleString()}円 との差額</span><span style="color:${margin>=0?'#5DC887':'#E07A5F'}">${margin>=0?'+':''}${margin}%</span></div>
+      <div class="margin-track"><div class="margin-fill" style="width:${Math.min(Math.abs(margin),100)}%;background:${margin>=0?'#5DC887':'#E07A5F'};"></div></div>
+    </div>`:''}
+  `;
+
+  // 内訳
+  const materials=[];
+  document.querySelectorAll('.material-row').forEach(row=>{
+    const inputs=row.querySelectorAll('input');
+    const name=inputs[0]?.value;
+    const price=parseFloat(inputs[1]?.value)||0;
+    const qty=parseFloat(inputs[2]?.value)||0;
+    if(name) materials.push({name,price:Math.round(price*m),qty,sub:Math.round(price*qty*m)});
+  });
+
+  document.getElementById('breakdown-body').innerHTML=`
+    <div style="font-size:10px;letter-spacing:0.15em;color:var(--ink-light);text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border-light);">資材費明細</div>
+    ${materials.map(mat=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-light);">
+      <span>${mat.name}（${mat.price.toLocaleString()}円 × ${mat.qty}）</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:15px;">${mat.sub.toLocaleString()}円</span>
+    </div>`).join('')}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:500;">
+      <span>資材費 計</span><span style="font-family:'Cormorant Garamond',serif;font-size:16px;">${matM.toLocaleString()}円</span>
+    </div>
+    <div style="font-size:10px;letter-spacing:0.15em;color:var(--ink-light);text-transform:uppercase;margin:12px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border-light);">施工費・諸経費</div>
+    <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-light);">
+      <span>施工費（${document.getElementById('e-workers')?.value||0}名 × ${document.getElementById('e-days')?.value||0}日）</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:15px;">${labM.toLocaleString()}円</span>
+    </div>
+    ${(parseFloat(document.getElementById('e-delivery')?.value)||0)>0?`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-light);"><span>搬入・搬出費</span><span style="font-family:'Cormorant Garamond',serif;font-size:15px;">${Math.round((parseFloat(document.getElementById('e-delivery').value)||0)*m).toLocaleString()}円</span></div>`:''}
+    ${(parseFloat(document.getElementById('e-transport')?.value)||0)>0?`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-light);"><span>交通費</span><span style="font-family:'Cormorant Garamond',serif;font-size:15px;">${Math.round((parseFloat(document.getElementById('e-transport').value)||0)*m).toLocaleString()}円</span></div>`:''}
+    ${(parseFloat(document.getElementById('e-design-fee')?.value)||0)>0?`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-light);"><span>デザイン料</span><span style="font-family:'Cormorant Garamond',serif;font-size:15px;">${Math.round((parseFloat(document.getElementById('e-design-fee').value)||0)*m).toLocaleString()}円</span></div>`:''}
+  `;
+}
+
+// ============================================================
+//  AI機能
+// ============================================================
+async function aiSuggestMaterials(){
+  const name=document.getElementById('e-name').value;
+  const type=document.getElementById('e-type').value;
+  const theme=document.getElementById('e-theme').value;
+  const size=document.getElementById('e-size').value;
+  const budget=document.getElementById('e-budget').value;
+  if(!type&&!theme){ alert('イベント種別またはテーマを入力してください'); return; }
+  document.getElementById('ai-suggest-loading').style.display='flex';
+  document.getElementById('ai-suggest-output').textContent='';
+  const prompt=`空間装飾会社の見積もり担当として、以下の案件に必要な資材と概算金額を提案してください。
+
+案件名：${name||'未入力'}
+種別：${type||'未指定'}
+テーマ：${theme||'未指定'}
+空間：${size||'?'}㎡
+予算：${budget?parseInt(budget).toLocaleString()+'円':'未定'}
+
+以下の形式で出力してください：
+【推奨資材リスト】
+資材名｜単価目安｜推奨数量｜小計
+（5〜8品目）
+
+【資材費合計目安】xxx,xxx円
+【施工費目安】xxx,xxx円（2名×1日）
+【合計目安】xxx,xxx円
+【予算に対するコメント】1〜2文`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})
+    });
+    const data=await res.json();
+    document.getElementById('ai-suggest-output').textContent=data.content?.map(i=>i.text||'').join('')||'エラー';
+  }catch(e){
+    document.getElementById('ai-suggest-output').textContent='エラー：'+e.message;
+  }
+  document.getElementById('ai-suggest-loading').style.display='none';
+}
+
+async function generateComment(){
+  const t=getTotals();
+  const m=planMultiplier;
+  const total=Math.round(t.total*m);
+  const name=document.getElementById('e-name').value;
+  const client=document.getElementById('e-client').value;
+  const type=document.getElementById('e-type').value;
+  const theme=document.getElementById('e-theme').value;
+  document.getElementById('ai-comment-loading').style.display='flex';
+  document.getElementById('ai-comment-output').textContent='';
+  const prompt=`空間装飾会社「IROHAD'ECOR」の見積もり担当として、以下の案件の顧客向け見積もりコメントを200字以内で作成してください。丁寧で温かみのある文体で。
+
+案件：${name} / ${client} 様
+種別：${type} / テーマ：${theme}
+合計金額：${total.toLocaleString()}円（税込）
+
+【コメント本文のみ出力してください】`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:prompt}]})
+    });
+    const data=await res.json();
+    document.getElementById('ai-comment-output').textContent=data.content?.map(i=>i.text||'').join('')||'エラー';
+  }catch(e){
+    document.getElementById('ai-comment-output').textContent='エラー：'+e.message;
+  }
+  document.getElementById('ai-comment-loading').style.display='none';
+}
+
+// ============================================================
+//  保存・出力
+// ============================================================
+function saveEstimate(){
+  const t=getTotals();
+  const m=planMultiplier;
+  const record={
+    id:CASE_ID,
+    name:document.getElementById('e-name').value,
+    client:document.getElementById('e-client').value,
+    type:document.getElementById('e-type').value,
+    date:document.getElementById('e-date').value,
+    total:Math.round(t.total*m),
+    status:'draft',
+    savedAt:new Date().toISOString()
+  };
+  let list=[];
+  try{ list=JSON.parse(localStorage.getItem('irohad_estimates')||'[]'); }catch(e){}
+  list=list.filter(r=>r.id!==CASE_ID);
+  list.unshift(record);
+  try{ localStorage.setItem('irohad_estimates',JSON.stringify(list)); }catch(e){}
+  alert('✓ 保存しました（'+CASE_ID+'）');
+  renderHistory();
+}
+
+function renderHistory(){
+  let list=[];
+  try{ list=JSON.parse(localStorage.getItem('irohad_estimates')||'[]'); }catch(e){}
+  const tbody=document.getElementById('history-tbody');
+  if(list.length===0){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--ink-light);">保存済みの見積もりはありません</td></tr>';
+    return;
+  }
+  tbody.innerHTML=list.map(r=>`<tr>
+    <td style="font-family:monospace;font-size:11px;color:var(--gold);">${r.id}</td>
+    <td>${r.name||'—'}</td>
+    <td>${r.client||'—'}</td>
+    <td style="font-size:11px;">${r.type||'—'}</td>
+    <td style="font-family:'Cormorant Garamond',serif;font-size:15px;">${r.total.toLocaleString()}円</td>
+    <td><span class="status-badge status-${r.status}">${r.status==='draft'?'下書き':r.status==='sent'?'送付済':'承認済'}</span></td>
+    <td><button style="padding:3px 10px;border:1px solid var(--border);border-radius:2px;font-size:10px;color:var(--ink-light);cursor:pointer;background:none;" onclick="changeStatus('${r.id}')">ステータス変更</button></td>
+  </tr>`).join('');
+}
+
+function changeStatus(id){
+  let list=[];
+  try{ list=JSON.parse(localStorage.getItem('irohad_estimates')||'[]'); }catch(e){}
+  const statuses=['draft','sent','approved'];
+  list=list.map(r=>{
+    if(r.id===id){
+      const idx=statuses.indexOf(r.status);
+      r.status=statuses[(idx+1)%statuses.length];
+    }
+    return r;
+  });
+  try{ localStorage.setItem('irohad_estimates',JSON.stringify(list)); }catch(e){}
+  renderHistory();
+}
+
+function printEstimate(){ window.print(); }
+
+function copyText(){
+  const t=getTotals();
+  const m=planMultiplier;
+  const total=Math.round(t.total*m);
+  const text=`【見積もり】${CASE_ID}
+案件名：${document.getElementById('e-name').value}
+クライアント：${document.getElementById('e-client').value}
+資材費：${Math.round(t.material*m).toLocaleString()}円
+施工費：${Math.round(t.labor*m).toLocaleString()}円
+諸経費：${Math.round(t.misc*m).toLocaleString()}円
+小計：${Math.round(t.subtotal*m).toLocaleString()}円
+消費税：${Math.round(t.tax*m).toLocaleString()}円
+合計：${total.toLocaleString()}円（税込）`;
+  navigator.clipboard.writeText(text).then(()=>alert('クリップボードにコピーしました'));
+}
+
+// タブ切り替え
+function switchTab(name,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='history') renderHistory();
+}
+
+// 初期化
+initMaterials();
+calcConstruction();
+</script>
+</body>
+</html>
