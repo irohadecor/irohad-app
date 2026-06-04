@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<!-- saved from url=(0060)file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>勤怠・休日・休暇 社内ルール ｜ IROHA D'ECOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./勤怠・休日・休暇 社内ルール ｜ IROHA D&#39;ECOR_files/css2" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f3ea;
+    --paper:#fffdf8;
+    --ink:#2c2a24;
+    --ink-soft:#5c574c;
+    --line:#e3dccb;
+    --sage:#5c6b4f;
+    --sage-deep:#414d38;
+    --clay:#b06a3c;
+    --clay-soft:#f3e6d6;
+    --gold:#c9a24a;
+    --red:#a6452f;
+    --red-soft:#f6e3dc;
+    --green-soft:#e7ecdf;
+    --shadow:0 1px 2px rgba(44,42,36,.04),0 8px 30px rgba(44,42,36,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans JP",system-ui,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.85;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 120px}
+
+  /* HERO */
+  header.hero{
+    position:relative;
+    padding:64px 20px 52px;
+    text-align:center;
+    background:
+      radial-gradient(120% 90% at 50% -10%, rgba(92,107,79,.10), transparent 60%),
+      linear-gradient(180deg,#fbf8f0,var(--bg));
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero .mark{
+    font-family:"Shippori Mincho",serif;
+    letter-spacing:.42em;
+    font-size:13px;
+    color:var(--sage);
+    text-transform:uppercase;
+    margin-bottom:18px;
+    padding-left:.42em;
+  }
+  .hero h1{
+    font-family:"Shippori Mincho",serif;
+    font-weight:700;
+    font-size:clamp(28px,5.4vw,44px);
+    margin:0 0 14px;
+    line-height:1.35;
+    letter-spacing:.02em;
+  }
+  .hero p.sub{
+    max-width:600px;margin:0 auto;
+    color:var(--ink-soft);font-size:15px;
+  }
+  .hero .leaf{
+    width:46px;height:2px;background:var(--clay);
+    margin:26px auto 0;position:relative;
+  }
+  .hero .leaf::before,.hero .leaf::after{
+    content:"";position:absolute;top:50%;width:5px;height:5px;border-radius:50%;
+    background:var(--gold);transform:translateY(-50%);
+  }
+  .hero .leaf::before{left:-12px}
+  .hero .leaf::after{right:-12px}
+
+  /* TOC */
+  nav.toc{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 26px;
+    margin:38px 0 10px;
+    box-shadow:var(--shadow);
+  }
+  nav.toc h2{
+    font-family:"Shippori Mincho",serif;font-size:14px;letter-spacing:.18em;
+    color:var(--sage);margin:0 0 14px;font-weight:600;
+  }
+  nav.toc ol{margin:0;padding:0;list-style:none;counter-reset:t;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 22px}
+  nav.toc li{counter-increment:t}
+  nav.toc a{
+    display:flex;gap:12px;align-items:baseline;
+    text-decoration:none;color:var(--ink);padding:7px 4px;border-radius:8px;
+    transition:background .15s,color .15s;font-size:14.5px;
+  }
+  nav.toc a:hover{background:var(--green-soft);color:var(--sage-deep)}
+  nav.toc a::before{
+    content:counter(t,decimal-leading-zero);
+    font-family:"Shippori Mincho",serif;color:var(--clay);font-size:13px;
+    min-width:22px;
+  }
+
+  /* SECTIONS */
+  section{margin-top:54px;scroll-margin-top:20px}
+  .sec-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px}
+  .sec-head .num{
+    font-family:"Shippori Mincho",serif;font-size:34px;color:var(--sage);
+    line-height:1;flex-shrink:0;opacity:.9;
+  }
+  .sec-head h2{
+    font-family:"Shippori Mincho",serif;font-weight:700;
+    font-size:clamp(20px,3.5vw,26px);margin:0;line-height:1.4;letter-spacing:.01em;
+  }
+  .sec-head .lead{color:var(--ink-soft);font-size:14.5px;margin-top:4px}
+
+  p{margin:0 0 14px}
+  strong{font-weight:700}
+  .em{color:var(--clay);font-weight:700}
+  .red{color:var(--red);font-weight:700}
+
+  /* PRINCIPLE CARDS */
+  .principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:8px}
+  .pcard{
+    background:var(--sage-deep);color:#f3f1e6;border-radius:16px;padding:24px 22px;
+    position:relative;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .pcard .pn{font-family:"Shippori Mincho",serif;font-size:46px;line-height:1;
+    color:var(--gold);opacity:.85;margin-bottom:10px}
+  .pcard h3{font-family:"Shippori Mincho",serif;font-size:18px;margin:0 0 8px;color:#fff}
+  .pcard p{font-size:13.5px;color:#dcdccb;margin:0;line-height:1.7}
+
+  /* TABLES */
+  .tablebox{overflow-x:auto;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);background:var(--paper)}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+  th,td{padding:13px 15px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+  thead th{background:var(--green-soft);color:var(--sage-deep);font-weight:700;
+    font-size:12.5px;letter-spacing:.04em;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(231,236,223,.28)}
+  td .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap}
+  .tag.pay{background:var(--green-soft);color:var(--sage-deep)}
+  .tag.nopay{background:var(--red-soft);color:var(--red)}
+  .tag.warn{background:#fbf0d8;color:#8a6a14}
+
+  /* CALLOUTS */
+  .callout{border-radius:14px;padding:18px 22px;margin:18px 0;font-size:14.5px;line-height:1.75;border:1px solid}
+  .callout .t{display:block;font-family:"Shippori Mincho",serif;font-weight:700;margin-bottom:6px;font-size:15px}
+  .callout.rule{background:var(--green-soft);border-color:#cdd6bd;color:var(--sage-deep)}
+  .callout.warn{background:var(--red-soft);border-color:#e7c4b6;color:#7d3322}
+  .callout.note{background:var(--clay-soft);border-color:#e6d2ba;color:#7a5326}
+  .callout.big{font-size:17px;text-align:center;padding:28px 22px}
+  .callout.big .t{font-size:15px;text-align:center}
+  .callout ul{margin:6px 0 0;padding-left:20px}
+  .callout li{margin:4px 0}
+
+  /* CHECKLIST */
+  .checklist{background:var(--paper);border:1px solid var(--line);border-radius:16px;
+    padding:8px 24px;box-shadow:var(--shadow)}
+  .checklist label{display:flex;gap:14px;align-items:flex-start;padding:14px 2px;
+    border-bottom:1px solid var(--line);cursor:pointer;font-size:14.5px}
+  .checklist label:last-child{border-bottom:none}
+  .checklist input{appearance:none;-webkit-appearance:none;width:22px;height:22px;
+    border:2px solid var(--sage);border-radius:6px;flex-shrink:0;margin-top:1px;
+    cursor:pointer;transition:.15s;position:relative}
+  .checklist input:checked{background:var(--sage);border-color:var(--sage)}
+  .checklist input:checked::after{content:"✓";color:#fff;position:absolute;
+    inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .checklist input:checked + span{color:var(--ink-soft);text-decoration:line-through}
+  .progress{font-size:13px;color:var(--sage);font-weight:700;padding:16px 2px 6px}
+
+  /* FILL-IN */
+  .fill{background:#fff;border:1px dashed var(--clay);border-radius:6px;
+    padding:1px 8px;color:var(--clay);font-weight:700;font-size:13px;white-space:nowrap}
+
+  footer{margin-top:64px;padding-top:28px;border-top:1px solid var(--line);
+    color:var(--ink-soft);font-size:13px;line-height:1.7}
+  footer .logo{font-family:"Shippori Mincho",serif;color:var(--sage);letter-spacing:.2em;
+    font-size:14px;margin-bottom:8px}
+
+  a.top{display:inline-block;margin-top:10px;color:var(--sage);font-size:13px;text-decoration:none}
+  a.top:hover{text-decoration:underline}
+
+  @media(max-width:560px){
+    body{font-size:15px}
+    .sec-head .num{font-size:28px}
+    th,td{padding:11px 12px}
+  }
+</style>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#f7f3ea" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body>
+
+<header class="hero" id="top">
+  <div class="mark">IROHA D'ECOR</div>
+  <h1>勤怠・休日・休暇<br>社内ルールブック</h1>
+  <p class="sub">勤怠を入力する前に、迷ったらここを開いてください。<br>正しく入力できていれば、月末の修正ややり取りがなくなります。全スタッフ共通のルールです。</p>
+  <div class="leaf"></div>
+</header>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <h2>もくじ</h2>
+    <ol>
+      <li><a href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#s1">まず守る3つの大原則</a></li>
+      <li><a href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#s2">休日・休暇の種類 早見表</a></li>
+      <li><a href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#s3">休憩のルール</a></li>
+      <li><a href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#s4">所定労働時間・退勤・残業</a></li>
+      <li><a href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#s5">出張・直行直帰・現地施行</a></li>
+      <li><a href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#s6">備考欄の書き方</a></li>
+      <li><a href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#s7">毎月の締め前セルフチェック</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 -->
+  <section id="s1">
+    <div class="sec-head">
+      <div class="num">01</div>
+      <div>
+        <h2>まず守る3つの大原則</h2>
+        <div class="lead">この3つができていれば、勤怠の入力はほぼ完璧です。</div>
+      </div>
+    </div>
+    <div class="principles">
+      <div class="pcard">
+        <div class="pn">1</div>
+        <h3>毎日かならず入力</h3>
+        <p>出勤日は1日も飛ばさず入力。「未入力」は後から確認・修正が必要になる原因No.1です。</p>
+      </div>
+      <div class="pcard">
+        <div class="pn">2</div>
+        <h3>休む日も「種別」を選ぶ</h3>
+        <p>休みを空欄にしない。<strong>有休／振替休日／欠勤</strong>のどれかを必ず選択します。空欄＝後から確認連絡が来ます。</p>
+      </div>
+      <div class="pcard">
+        <div class="pn">3</div>
+        <h3>休憩は短かった人だけ記入</h3>
+        <p>休憩は<strong>全員1時間（12:00〜13:00）</strong>で計算します。休憩が短かった、または取れなかった人だけ、その時刻を入力してください。</p>
+      </div>
+    </div>
+    <div class="callout note">
+      <span class="t">前提となる当社の基本設定</span>
+      所定労働時間＝<strong>1日7時間</strong>／公休＝<strong>毎週 土・日</strong>。<br>
+      日曜は<strong>法定休日</strong>（休日出勤手当の対象）、土曜は<strong>所定休日</strong>です。平日（月〜金）は原則すべて出勤日で、休む場合は有休・振替休日・欠勤のいずれかになります。
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <div class="sec-head">
+      <div class="num">02</div>
+      <div>
+        <h2>休日・休暇の種類 早見表</h2>
+        <div class="lead">「公休」と「有休」と「欠勤」は別物です。勤怠ではこの種別を必ず選びます。</div>
+      </div>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead>
+          <tr><th>種別</th><th>内容</th><th>給与</th><th>勤怠での入力</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>公休（日曜＝法定休日）</strong></td>
+            <td>もともと働く義務のない休日。出勤すると<span class="em">休日出勤手当（割増）の対象</span>。</td>
+            <td><span class="tag pay">控除なし</span></td>
+            <td>原則入力不要（休み）。出勤した場合は出勤＋振替の手続き。</td>
+          </tr>
+          <tr>
+            <td><strong>公休（土曜＝所定休日）</strong></td>
+            <td>会社が定めた休日。出勤しても休日手当の対象外（週40時間超の時間外割増が出る場合あり）。</td>
+            <td><span class="tag pay">控除なし</span></td>
+            <td>原則入力不要（休み）。出勤した場合は出勤入力＋備考。</td>
+          </tr>
+          <tr>
+            <td><strong>有給休暇（有休）</strong></td>
+            <td>出勤日に取る、給与の出るお休み。<strong>事前申請</strong>が原則。</td>
+            <td><span class="tag pay">支給あり</span></td>
+            <td>「有休」を選択。半休の場合は半休で入力。</td>
+          </tr>
+          <tr>
+            <td><strong>振替休日</strong></td>
+            <td>休日に働く代わりに、<strong>事前に</strong>別の労働日を休みに振り替えたもの。<span class="red">割増は発生しない</span>。</td>
+            <td><span class="tag pay">控除なし</span></td>
+            <td>「振替休日」を選択。出勤した休日と、休んだ日の両方を記録。</td>
+          </tr>
+          <tr>
+            <td><strong>欠勤</strong></td>
+            <td>出勤日に、有休・振替などを使わずに休むこと。<strong>無給（欠勤控除）</strong>。</td>
+            <td><span class="tag nopay">控除あり</span></td>
+            <td>「欠勤」を選択。理由を備考に。</td>
+          </tr>
+          <tr>
+            <td><strong>特別休暇</strong></td>
+            <td>慶弔など、就業規則で定めた特別なお休み。</td>
+            <td><span class="tag warn">規定による</span></td>
+            <td>「特別休暇」を選択。事前に管理者へ連絡。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout rule">
+      <span class="t">いちばん大事なポイント</span>
+      <strong>平日（月〜金）を休むとき、それは「公休」ではありません。</strong>公休は土日だけです。平日に休むなら必ず「有休／振替休日／欠勤」のどれかを選んでください。ここが空欄や「公休」になっていると、毎月確認連絡が来ます。
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <div class="sec-head">
+      <div class="num">03</div>
+      <div>
+        <h2>休憩のルール</h2>
+      </div>
+    </div>
+    <div class="callout big rule">
+      <span class="t">休憩時間</span>
+      原則、全員 <strong>12:00〜13:00 の1時間休憩</strong> となります。
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <div class="sec-head">
+      <div class="num">04</div>
+      <div>
+        <h2>所定労働時間・退勤・残業</h2>
+        <div class="lead">退勤ボタンを押すタイミングと、残業のルールです。</div>
+      </div>
+    </div>
+    <p>当社の所定労働時間は<strong>1日7時間</strong>です。</p>
+    <div class="callout rule">
+      <span class="t">退勤・残業のルール</span>
+      <ul>
+        <li>退勤は <strong>16:50〜17:00 の間に退勤ボタンを押す</strong>（所定の終業時刻）。</li>
+        <li><strong>17:00以降</strong>も働く場合は残業です。<span class="em">必ず申請</span>してください。</li>
+        <li><strong>18:00以降</strong>は割増（残業手当が増える時間帯）になります。</li>
+        <li>遅刻・早退があった日は、実際の時刻をそのまま入力し、理由を備考欄に書く（例：「展示会のため早退」）。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <div class="sec-head">
+      <div class="num">05</div>
+      <div>
+        <h2>出張・直行直帰・現地施行</h2>
+        <div class="lead">現地での施行・搬入・出張は、すべて「出勤」です。</div>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="t">現地・出張も必ず勤怠を入力</span>
+      会社に寄らず現場へ直行直帰した日も、<strong>必ず勤怠を入力</strong>してください。入力がないと「この日は出勤？休み？」と毎回確認が入ります。
+    </div>
+    <div class="callout rule">
+      <span class="t">入力ルール</span>
+      <ul>
+        <li>始業・終業の時刻を入力する（移動を含む実際の勤務時間）。</li>
+        <li>備考欄に<strong>現場名・地名</strong>を記載（例：「愛知県 ◯◯店 現地施行」）。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <div class="sec-head">
+      <div class="num">06</div>
+      <div>
+        <h2>備考欄の書き方</h2>
+        <div class="lead">備考欄は「あとで誰が見ても判断できるメモ」。ここが充実すると確認連絡が激減します。</div>
+      </div>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>こういう日は</th><th>備考欄に書くこと（例）</th></tr></thead>
+        <tbody>
+          <tr><td>早く上がった</td><td>「展示会のため早退（15:00退社）」</td></tr>
+          <tr><td>遅く来た</td><td>「私用のため10:00出社」</td></tr>
+          <tr><td>現地・出張</td><td>「愛知県 ◯◯店 現地施行」</td></tr>
+          <tr><td>振替で出勤した休日</td><td>「振替出勤（休みは5/9に振替）」</td></tr>
+          <tr><td>休憩が短かった/取れなかった</td><td>「12:00〜12:30のみ休憩」</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout note">
+      <span class="t">合言葉</span>「<strong>なぜその時間／その休みなのか</strong>」が一言書いてあれば、確認せずに処理できます。
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <div class="sec-head">
+      <div class="num">07</div>
+      <div>
+        <h2>毎月の締め前セルフチェック</h2>
+        <div class="lead">毎月の締め日の前に、各自このリストで確認してください。</div>
+      </div>
+    </div>
+    <div class="checklist" id="checklist">
+      <label><input type="checkbox"><span>出勤日に<strong>未入力の日</strong>がない（1日も飛んでいない）</span></label>
+      <label><input type="checkbox"><span>休んだ日は<strong>種別（有休／振替／欠勤）</strong>を選んでいる（空欄・「公休」になっていない）</span></label>
+      <label><input type="checkbox"><span>所定（7時間）より短い日は<strong>理由</strong>を備考に書いた</span></label>
+      <label><input type="checkbox"><span>現地・出張・直行直帰の日も<strong>出勤として入力</strong>した</span></label>
+      <label><input type="checkbox"><span>休日（土日・祝日）に出勤した日は<strong>振替休日として処理</strong>した</span></label>
+      <label><input type="checkbox"><span>遅刻・早退の<strong>時刻が実際どおり</strong>になっている</span></label>
+      <label><input type="checkbox"><span>17:00以降の勤務は<strong>残業申請</strong>をした</span></label>
+      <div class="progress" id="prog">0 / 7 完了</div>
+    </div>
+    <a class="top" href="file:///C:/Users/bomi6/Downloads/iroha-attendance-rules.html#top">↑ もくじに戻る</a>
+  </section>
+
+  <footer>
+    <div class="logo">IROHA D'ECOR</div>
+    勤怠・休日・休暇 社内ルールブック ｜ 全スタッフ共通<br>
+    迷ったら入力前にこのページを開いてください。ルールの更新は管理者まで。
+  </footer>
+
+</div>
+
+<script>
+  (function(){
+    var boxes = document.querySelectorAll('#checklist input[type=checkbox]');
+    var prog = document.getElementById('prog');
+    function update(){
+      var done = 0;
+      boxes.forEach(function(b){ if(b.checked) done++; });
+      prog.textContent = done + ' / ' + boxes.length + ' 完了' + (done===boxes.length ? ' ✓ すべてOK！' : '');
+    }
+    boxes.forEach(function(b){ b.addEventListener('change', update); });
+  })();
+</script>
+
+
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js");
+}
+document.addEventListener("DOMContentLoaded", function() {
+  var isApp = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+  if (isApp) {
+    var btn = document.createElement("a");
+    btn.href = "./index.html";
+    btn.style.cssText = "position:fixed;bottom:24px;right:16px;z-index:9999;background:rgba(44,42,36,0.9);color:#e3dccb;border:1px solid rgba(201,162,74,0.4);border-radius:99px;padding:8px 16px;font-size:11px;text-decoration:none;letter-spacing:0.1em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,0.2);font-family:'Zen Kaku Gothic New',sans-serif;";
+    btn.textContent = "⌂ HOME";
+    document.body.appendChild(btn);
+  }
+});
+</script>
+</body></html>
