@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>プランター早見表 — IROHAD'ECOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+JP:wght@300;400;500&family=Shippori+Mincho:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F2ECE0;--surface:#FCFAF4;--parchment:#FBF7EF;
+  --gold:#BE4128;--gold-light:#E9C6B7;--gold-dark:#8A2E1A;
+  --ink:#191512;--ink-mid:#5C5247;--ink-light:#8E8270;
+  --border:#DAD0BE;--border-light:#EDE5D4;
+  --green:#2D7A4F;--green-light:#E8F5EE;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+.header{background:var(--ink);padding:1.5rem 2rem;}
+.brand{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.3em;color:var(--gold-light);text-transform:uppercase;margin-bottom:4px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:#fff;letter-spacing:0.06em;}
+
+/* 連絡フロー */
+.flow-banner{background:rgba(184,152,106,0.1);border-bottom:1px solid rgba(184,152,106,0.2);padding:1rem 2rem;}
+.flow-title{font-size:11px;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+.flow-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.flow-step{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:7px 12px;font-size:12px;color:var(--ink);display:flex;align-items:center;gap:6px;}
+.flow-arrow{color:var(--gold-light);font-size:14px;}
+.contact-btn{margin-left:auto;padding:8px 18px;background:var(--green);color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:6px;text-decoration:none;}
+
+.main{max-width:860px;margin:0 auto;padding:1.5rem;}
+
+/* フィルター */
+.filter-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:11px;color:var(--ink-light);letter-spacing:0.1em;}
+.filter-chip{padding:6px 14px;border:1px solid var(--border);border-radius:99px;font-size:12px;color:var(--ink-mid);cursor:pointer;background:var(--surface);transition:all 0.15s;user-select:none;}
+.filter-chip:hover{border-color:var(--gold-light);}
+.filter-chip.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+
+/* スクショモード */
+.screenshot-mode-btn{margin-left:auto;padding:7px 16px;background:none;border:1px solid var(--border);border-radius:3px;font-size:11px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;}
+.screenshot-mode-btn:hover{border-color:var(--gold);color:var(--gold);}
+.screenshot-mode-btn.on{background:var(--gold);border-color:var(--gold);color:#fff;}
+
+/* プランターグリッド */
+.planter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+
+.planter-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:all 0.2s;cursor:pointer;}
+.planter-card:hover{border-color:var(--gold-light);box-shadow:0 4px 16px rgba(184,152,106,0.15);transform:translateY(-2px);}
+.planter-card.selected{border-color:var(--gold);border-width:2px;box-shadow:0 0 0 3px rgba(184,152,106,0.15);}
+
+.planter-img{width:100%;height:140px;background:var(--parchment);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;}
+.planter-select-check{position:absolute;top:8px;right:8px;width:22px;height:22px;background:var(--gold);border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;}
+.planter-card.selected .planter-select-check{display:flex;}
+
+.planter-info{padding:10px 12px;}
+.planter-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.planter-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.planter-tag{font-size:10px;padding:2px 7px;border-radius:99px;background:var(--parchment);color:var(--ink-mid);}
+.planter-size{font-size:11px;color:var(--ink-light);margin-bottom:3px;}
+.planter-price{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-dark);}
+.planter-stock{font-size:10px;margin-top:4px;}
+.stock-ok{color:var(--green);}
+.stock-unknown{color:var(--ink-light);}
+
+/* 選択バー */
+.selection-bar{position:fixed;bottom:0;left:0;right:0;background:var(--ink);padding:12px 2rem;display:none;align-items:center;gap:12px;z-index:100;}
+.selection-bar.show{display:flex;}
+.sel-count{font-size:13px;color:var(--gold-light);}
+.sel-actions{display:flex;gap:8px;margin-left:auto;}
+.sel-btn{padding:8px 18px;border:1px solid rgba(255,255,255,0.2);border-radius:3px;font-size:12px;color:#fff;cursor:pointer;background:none;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;}
+.sel-btn:hover{background:rgba(255,255,255,0.1);}
+.sel-btn.primary{background:var(--gold);border-color:var(--gold);}
+.sel-btn.primary:hover{background:var(--gold-dark);}
+
+/* スクショ用メモモーダル */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,40,32,0.6);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:6px;width:100%;max-width:440px;overflow:hidden;}
+.modal-header{background:var(--ink);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#fff;}
+.modal-close{background:none;border:1px solid rgba(255,255,255,0.2);color:var(--gold-light);width:28px;height:28px;border-radius:2px;cursor:pointer;font-size:14px;}
+.modal-body{padding:1.25rem;}
+.selected-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.selected-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--parchment);border-radius:3px;font-size:12px;}
+.modal-note{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:3px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:300;color:var(--ink);background:var(--bg);resize:vertical;min-height:70px;margin-bottom:10px;}
+.modal-note:focus{outline:none;border-color:var(--gold);}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border-light);display:flex;gap:8px;justify-content:flex-end;}
+.btn-cancel{padding:8px 16px;background:none;border:1px solid var(--border);border-radius:3px;font-size:12px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.btn-contact{padding:8px 20px;background:var(--green);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;}
+
+@media(max-width:640px){
+  .header,.flow-banner,.main{padding-left:1rem;padding-right:1rem;}
+  .planter-grid{grid-template-columns:repeat(2,1fr);}
+  .flow-steps{gap:4px;}
+  .flow-step{font-size:11px;padding:6px 8px;}
+}
+@media print{
+  .header,.flow-banner,.filter-row,.selection-bar,.screenshot-mode-btn{display:none!important;}
+  .planter-card{break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">IROHAD'ECOR</div>
+  <h1 class="page-title">プランター早見表</h1>
+</header>
+
+<!-- 連絡フロー -->
+<div class="flow-banner">
+  <div class="flow-title">在庫確認フロー</div>
+  <div class="flow-steps">
+    <div class="flow-step">📋 早見表で選ぶ</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">📸 スクショ</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">📞 山本さんに連絡</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">✅ 在庫確認・発注</div>
+    <a class="contact-btn" href="tel:0000000000" id="contact-link">📞 山本さんに電話</a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="filter-row">
+    <span class="filter-label">絞り込み：</span>
+    <span class="filter-chip active" onclick="setFilter('all',this)">すべて</span>
+    <span class="filter-chip" onclick="setFilter('indoor',this)">室内向け</span>
+    <span class="filter-chip" onclick="setFilter('outdoor',this)">屋外向け</span>
+    <span class="filter-chip" onclick="setFilter('small',this)">小型</span>
+    <span class="filter-chip" onclick="setFilter('medium',this)">中型</span>
+    <span class="filter-chip" onclick="setFilter('large',this)">大型</span>
+    <button class="screenshot-mode-btn" id="ss-btn" onclick="toggleScreenshotMode()">📸 選択モード</button>
+  </div>
+
+  <div class="planter-grid" id="planter-grid"></div>
+
+</main>
+
+<!-- 選択バー -->
+<div class="selection-bar" id="selection-bar">
+  <span class="sel-count" id="sel-count">0点選択中</span>
+  <div class="sel-actions">
+    <button class="sel-btn" onclick="clearSelection()">クリア</button>
+    <button class="sel-btn primary" onclick="openContactModal()">📞 山本さんに連絡</button>
+  </div>
+</div>
+
+<!-- 連絡モーダル -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">在庫確認メモを作成</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:11px;letter-spacing:0.1em;color:var(--ink-light);text-transform:uppercase;margin-bottom:8px;">選択したプランター</div>
+      <div class="selected-list" id="selected-list"></div>
+      <div style="font-size:11px;color:var(--ink-light);margin-bottom:6px;">追加メモ（数量・納期など）</div>
+      <textarea class="modal-note" id="contact-note" placeholder="例：3点必要・来週中に納品希望"></textarea>
+      <div style="font-size:11px;color:var(--ink-light);">以下のテキストをコピーして山本さんにLINEまたはメールで送ってください。</div>
+      <div style="background:var(--parchment);border-radius:3px;padding:10px;margin-top:8px;font-size:12px;line-height:1.7;" id="contact-text-preview"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">閉じる</button>
+      <button class="btn-contact" onclick="copyContactText()">📋 コピーして連絡</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// プランターデータ（追加・編集はここに記載）
+const PLANTERS = [
+  { id:1, name:'テラコッタ 丸型 S', emoji:'🪴', size:'W18×H15cm', tags:['室内','屋外','小型'], use:'ハーブ・多肉植物', price:'¥1,200〜', category:['indoor','outdoor','small'] },
+  { id:2, name:'テラコッタ 丸型 M', emoji:'🪴', size:'W24×H20cm', tags:['室内','屋外','中型'], use:'観葉植物・花壇用', price:'¥2,200〜', category:['indoor','outdoor','medium'] },
+  { id:3, name:'テラコッタ 丸型 L', emoji:'🪴', size:'W32×H28cm', tags:['屋外','大型'], use:'大型植物・オリーブ', price:'¥4,500〜', category:['outdoor','large'] },
+  { id:4, name:'スクエアポット ホワイト S', emoji:'⬜', size:'W15×H15cm', tags:['室内','小型'], use:'観葉植物・デスク用', price:'¥1,500〜', category:['indoor','small'] },
+  { id:5, name:'スクエアポット ホワイト M', emoji:'⬜', size:'W22×H22cm', tags:['室内','中型'], use:'モンステラ・フィカス', price:'¥3,200〜', category:['indoor','medium'] },
+  { id:6, name:'スクエアポット ブラック M', emoji:'🔲', size:'W22×H22cm', tags:['室内','屋外','中型'], use:'クールなインテリア植物', price:'¥3,500〜', category:['indoor','outdoor','medium'] },
+  { id:7, name:'ウッドプランター ナチュラル', emoji:'🪵', size:'W40×H20cm', tags:['室内','屋外','大型'], use:'ハーブガーデン・花壇', price:'¥5,800〜', category:['indoor','outdoor','large'] },
+  { id:8, name:'ハンギングバスケット', emoji:'🧺', size:'φ28cm', tags:['屋外','中型'], use:'ペチュニア・アイビー', price:'¥2,000〜', category:['outdoor','medium'] },
+  { id:9, name:'ロングプランター L', emoji:'📏', size:'W60×H20cm', tags:['屋外','大型'], use:'花壇・玄関ディスプレイ', price:'¥6,500〜', category:['outdoor','large'] },
+  { id:10, name:'セラミックポット グレー S', emoji:'🏺', size:'W14×H16cm', tags:['室内','小型'], use:'サボテン・エアプランツ', price:'¥1,800〜', category:['indoor','small'] },
+  { id:11, name:'セラミックポット グレー M', emoji:'🏺', size:'W20×H24cm', tags:['室内','中型'], use:'パキラ・ポトス', price:'¥3,800〜', category:['indoor','medium'] },
+  { id:12, name:'アイアンスタンド付きポット', emoji:'🖤', size:'W18×H50cm（スタンド込）', tags:['室内','大型'], use:'インテリアアクセント', price:'¥7,200〜', category:['indoor','large'] },
+];
+
+let selectedIds = new Set();
+let screenshotMode = false;
+let currentFilter = 'all';
+
+function setFilter(f, btn){
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function toggleScreenshotMode(){
+  screenshotMode = !screenshotMode;
+  const btn = document.getElementById('ss-btn');
+  btn.classList.toggle('on', screenshotMode);
+  btn.textContent = screenshotMode ? '✓ 選択モードON' : '📸 選択モード';
+  if(!screenshotMode){ clearSelection(); }
+  renderGrid();
+}
+
+function renderGrid(){
+  const filtered = currentFilter === 'all' ? PLANTERS : PLANTERS.filter(p => p.category.includes(currentFilter));
+  const grid = document.getElementById('planter-grid');
+  grid.innerHTML = filtered.map(p => `
+    <div class="planter-card ${selectedIds.has(p.id)?'selected':''}" onclick="cardClick(${p.id})">
+      <div class="planter-img">
+        ${p.emoji}
+        <div class="planter-select-check">✓</div>
+      </div>
+      <div class="planter-info">
+        <div class="planter-name">${p.name}</div>
+        <div class="planter-tags">${p.tags.map(t=>`<span class="planter-tag">${t}</span>`).join('')}</div>
+        <div class="planter-size">📐 ${p.size}</div>
+        <div class="planter-size">🌱 ${p.use}</div>
+        <div class="planter-price">${p.price}</div>
+        <div class="planter-stock stock-unknown">在庫：山本さんに確認</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function cardClick(id){
+  if(!screenshotMode) return;
+  if(selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  updateSelectionBar();
+  renderGrid();
+}
+
+function updateSelectionBar(){
+  const bar = document.getElementById('selection-bar');
+  const count = document.getElementById('sel-count');
+  if(selectedIds.size > 0){
+    bar.classList.add('show');
+    count.textContent = selectedIds.size + '点選択中';
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function clearSelection(){
+  selectedIds.clear();
+  updateSelectionBar();
+  renderGrid();
+}
+
+function openContactModal(){
+  const items = PLANTERS.filter(p => selectedIds.has(p.id));
+  document.getElementById('selected-list').innerHTML = items.map(p =>
+    `<div class="selected-item"><span>${p.emoji}</span><span>${p.name}（${p.size}）</span></div>`
+  ).join('');
+  updatePreview();
+  document.getElementById('contact-modal').classList.add('open');
+}
+
+function updatePreview(){
+  const items = PLANTERS.filter(p => selectedIds.has(p.id));
+  const note = document.getElementById('contact-note').value;
+  const text = `【ヨネヤマプランテーション 山本様】\nIROHAD'ECORです。以下のプランターの在庫確認をお願いします。\n\n${items.map((p,i)=>`${i+1}. ${p.name}（${p.size}）`).join('\n')}\n${note?'\n備考：'+note:''}\n\nよろしくお願いいたします。`;
+  document.getElementById('contact-text-preview').textContent = text;
+}
+
+document.addEventListener('input', e => { if(e.target.id==='contact-note') updatePreview(); });
+
+function closeModal(){ document.getElementById('contact-modal').classList.remove('open'); }
+
+function copyContactText(){
+  const text = document.getElementById('contact-text-preview').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    alert('✓ コピーしました。山本さんにLINE/メールで送ってください。');
+    closeModal();
+  });
+}
+
+renderGrid();
+</script>
+</body>
+</html>

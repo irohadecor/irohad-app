@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="IROHAD" />
+<meta name="theme-color" content="#2C2820" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAEiUlEQVR4nO3cwXUaSRSG0dYc752Cl144EqJhwUYRaMOCaMhrIvBszDltjhjRUK+q6f/eACTcvK/qIct++/Xzx+8JQv0z+gXASAIgmgCIJgCiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiDat9Ev4P8c97v30a+BNg6n88fo1/CZVQVwPfBrfWgst9b39m0N/yj+8nDW8lCot5b3fGgAa3kIjDN6BoYFcNzv3g0+F6PmoXsAo4tnvUbMRtcAnPrco+ecdPt7AMPPvQ6n80evH4F3CcDws1SvCMoDMPw8qkcEfhWCaKUBOP15VvUtUBaA4aeVygisQEQrCcDpT2tVt4AbgGjNA3D6U6XiFnADEE0ARBMA0ZoGYP+nWuvPAW4AogmAaAIgmgCIJgCiCYBoAiCaAIgmgMGO+92/o19DMgEQTQADXU5/t8A4AiCaAIgmgEGu1x5r0BgCIJoAiCaAAW6tO9ag/gRANAEQTQCdfbXmWIP6EgDRBEA0AXR073pjDepHAEQTANEE0MnStcYa1IcAiCYAogmgg0fXGWtQPQEQTQBEE0CxZ9cYa1AtARBNAEQTQKFW64s1qI4AiCYAogmgSOu1xRpUQwBEEwDRBFCgal2xBrUnAKIJgGgCaKx6TbEGtSUAon0b/QK2oPepPP9+h9P5e8/vvTUCeNBaVhExPEcAC6xl6G8Rw3IC+MLah/4WMdxHAJ941aG/RQy3CeCPrQ39LWL4W3QAKUN/ixgCA0gf+ltSY4gIwNAvkxTDZgMw9G1sPYZNBWDoa20xhpcPwNCPsZUYXj6A+cMXQz+vPPRzLx/AnBhqbWXo5zYVwJwY2tji0M9tNoA5MSyz9aGfiwhgTgyfSxr6ubgA5tJjSB36uegA5lJiMPR/E8AnthaDob9NAF941RgM/X0EsMDaYzD0ywngQWuJwdA/RwAN9I7B0LfjP8YimgAaqz6dnf5tCYBoAiCaAApUrSnWn/YEQDQBEE0ARVqvK9afGgIgmgCIJoBCrdYW608dARBNAEQTQLFn1xfrTy0BEE0ARBNAB4+uMdafegIgmgCIJoBOlq4z1p8+BEA0ARBNAB3du9ZYf/oRANEEQDQBdPbVemP96UsARBMA0QQwwK01x/rTnwCIJgCiCWCQ63XH+jOGAIgmAKIJYKDL2mP9GUcARBPAYE7/sQRANAEQTQBEEwDRBEA0ARBNAEQTANGaBnA4nT+O+917y68Jc8f97v1wOn+0+npuAKIJgGgCIFrzAHwOoErr/X+a3ACEKwnALUBrFaf/NLkBCFcWgFuAVqpO/2kqvgFEwLMqh3+arECEKw/ALcCjqk//aep0A4iApXoM/zR1XIFEwL16Df80TdPbr58/fvf4RheXCHr9AXkdI2ajewAXPStn/UbNw7AApsltwPgZGBrAxeiHQH9rec9XEcDF9Yfk0Q+Hdtb63q4qgGt+arQdaxn4a6sOAKr5VQiiCYBoAiCaAIgmAKIJgGgCIJoAiCYAogmAaAIgmgCIJgCiCYBoAiCaAIgmAKL9B5TM6I7/7RLbAAAAAElFTkSuQmCC" />
+<title>Rose Garden Co., Ltd 業務システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+JP:wght@300;400;500&family=Shippori+Mincho:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #2C2820;
+    --card: #352F24;
+    --card-border: rgba(255,255,255,0.07);
+    --text: #D3D0CB;
+    --text-title: #A09488;
+    --text-sub: #7A7060;
+    --gold: #A09488;
+    --gold-light: #A09488;
+    --ink-light: #7A7060;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif; font-weight: 300;
+    background: #2C2820;
+    color: var(--text);
+    min-height: 100vh;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  /* ヘッダー */
+  .header {
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .logo-mark { font-size: 28px; margin-bottom: 8px; opacity: 0.7; }
+  .brand { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.35em; color: var(--text-title); text-transform: uppercase; margin-bottom: 8px; }
+  .app-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--text); letter-spacing: 0.06em; line-height: 1.1; }
+  .app-sub { font-size: 11px; color: var(--text-sub); letter-spacing: 0.12em; margin-top: 8px; }
+
+  /* 今日の日付 */
+  .today-strip {
+    background: rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 10px 2rem;
+    text-align: center;
+    font-size: 12px; color: var(--text-title); letter-spacing: 0.1em;
+  }
+
+  /* メニュー */
+  .menu { padding: 1.5rem 1.5rem 2rem; display: flex; flex-direction: column; gap: 10px; max-width: 480px; margin: 0 auto; }
+
+  .menu-card {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 1.1rem 1.25rem;
+    text-decoration: none; color: var(--text);
+    transition: all 0.2s; cursor: pointer;
+    -webkit-user-select: none;
+  }
+  .menu-card:active { transform: scale(0.98); opacity: 0.85; }
+  .menu-card.primary { background: var(--card); border-color: rgba(160,148,136,0.25); }
+
+  .menu-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+    background: rgba(255,255,255,0.07);
+  }
+  .menu-card.primary .menu-icon { background: rgba(160,148,136,0.15); }
+
+  .menu-text { flex: 1; }
+  .menu-name { font-size: 14px; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 3px; color: var(--text); }
+  .menu-desc { font-size: 11px; color: var(--text-title); letter-spacing: 0.04em; }
+  .menu-card.primary .menu-desc { color: var(--text-title); }
+  .menu-arrow { color: var(--text-sub); font-size: 16px; }
+
+  /* セクション区切り */
+  .section-label {
+    font-size: 10px; letter-spacing: 0.2em; color: var(--text-sub);
+    text-transform: uppercase; padding: 0 0.25rem; margin-top: 0.5rem; margin-bottom: -2px;
+  }
+
+  /* インストール案内 */
+  .install-banner {
+    margin: 0 1.5rem 1.5rem; padding: 1rem 1.25rem;
+    background: rgba(42,95,168,0.15); border: 1px solid rgba(42,95,168,0.3);
+    border-radius: 6px; font-size: 12px; color: #A8C4F0;
+    display: none;
+  }
+  .install-banner strong { display: block; margin-bottom: 4px; font-size: 13px; color: #C8DEFF; }
+
+  /* バージョン */
+  .version { text-align: center; padding: 1.5rem; font-size: 10px; color: var(--ink-light); letter-spacing: 0.1em; }
+
+  /* オフラインバナー */
+  .offline-banner {
+    display: none; background: var(--gold-dark); color: #fff;
+    text-align: center; padding: 8px; font-size: 11px; letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<div class="offline-banner" id="offline-banner">📡 オフラインモード — データはローカルに保存されています</div>
+
+<header class="header">
+  <div class="logo-mark">✦</div>
+  <div class="brand">業務システム</div>
+  <h1 class="app-title">Rose Garden Co., Ltd</h1>
+  <div class="app-sub">Powered by AI</div>
+</header>
+
+<div class="today-strip" id="today-strip">—</div>
+
+<nav class="menu">
+  <a class="menu-card primary" href="irohad_mvv.html">
+    <div class="menu-icon">✦</div>
+    <div class="menu-text">
+      <div class="menu-name">Mission / Vision / Value</div>
+      <div class="menu-desc">会社の理念・ビジョン・チームブランド</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <span class="section-label" style="margin-top:0.75rem;">毎日使う</span>
+
+  <a class="menu-card primary" href="irohad_daily_report.html">
+    <div class="menu-icon">📊</div>
+    <div class="menu-text">
+      <div class="menu-name">日報入力</div>
+      <div class="menu-desc">売上・経費・案件数を入力する</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card primary" href="irohad_ecor_hearing_sheet_v2.html">
+    <div class="menu-icon">📋</div>
+    <div class="menu-text">
+      <div class="menu-name">現調ヒアリングシート</div>
+      <div class="menu-desc">現場でその場で入力・AI見積もり生成</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card primary" href="irohad_estimate.html">
+    <div class="menu-icon">✦</div>
+    <div class="menu-text">
+      <div class="menu-name">見積もり自動システム</div>
+      <div class="menu-desc">資材費・施工費・諸経費を自動計算・3プラン出力</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card primary" href="irohad_shift.html">
+    <div class="menu-icon">👥</div>
+    <div class="menu-text">
+      <div class="menu-name">シフト＆スケジュール管理</div>
+      <div class="menu-desc">スタッフの作業・場所・空き時間を管理</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <span class="section-label" style="margin-top:0.75rem;">経営管理</span>
+
+  <a class="menu-card" href="irohad_dashboard.html">
+    <div class="menu-icon">📈</div>
+    <div class="menu-text">
+      <div class="menu-name">月次経営ダッシュボード</div>
+      <div class="menu-desc">売上・粗利・案件数を一画面で確認</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="irohad_plan.html">
+    <div class="menu-icon">📋</div>
+    <div class="menu-text">
+      <div class="menu-name">ブランド別 短期計画</div>
+      <div class="menu-desc">各ブランドの1年間の行動計画</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="irohad_todo.html">
+    <div class="menu-icon">✅</div>
+    <div class="menu-text">
+      <div class="menu-name">ブランド別 ToDo・数値目標</div>
+      <div class="menu-desc">各ブランドのタスクと目標数値</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <span class="section-label" style="margin-top:0.75rem;">デザイン・資材</span>
+
+  <a class="menu-card" href="tsubomi_notebook.html">
+    <div class="menu-icon">📓</div>
+    <div class="menu-text">
+      <div class="menu-name">蕾の脳内</div>
+      <div class="menu-desc">Case Study Notebook — 気づき・学び・アイデア</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="zaizan_mihoncho.html">
+    <div class="menu-icon">🌸</div>
+    <div class="menu-text">
+      <div class="menu-name">資材見本帳</div>
+      <div class="menu-desc">花材・素材の種類・AI雰囲気分析</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="irohad_checklist.html">
+    <div class="menu-icon">✅</div>
+    <div class="menu-text">
+      <div class="menu-name">現場施工チェックリスト</div>
+      <div class="menu-desc">持ち物・施工前後の確認リスト</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="irohad_planter.html">
+    <div class="menu-icon">🪴</div>
+    <div class="menu-text">
+      <div class="menu-name">プランター早見表</div>
+      <div class="menu-desc">サイズ・用途・山本さんへの在庫確認フロー</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <span class="section-label" style="margin-top:0.75rem;">社内ルール・設定</span>
+
+  <a class="menu-card" href="irohad_rules.html">
+    <div class="menu-icon">📖</div>
+    <div class="menu-text">
+      <div class="menu-name">社内ルールブック</div>
+      <div class="menu-desc">服装・時間・環境整備・クリエイター制度</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="irohad_attendance.html">
+    <div class="menu-icon">📅</div>
+    <div class="menu-text">
+      <div class="menu-name">勤怠・休日・休暇ルール</div>
+      <div class="menu-desc">出勤・有給・休暇の社内ルール</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+  <a class="menu-card" href="irohad_setup_guide.html">
+    <div class="menu-icon">⚙️</div>
+    <div class="menu-text">
+      <div class="menu-name">スプレッドシート連携設定</div>
+      <div class="menu-desc">Googleスプレッドシートへの自動蓄積設定</div>
+    </div>
+    <span class="menu-arrow">›</span>
+  </a>
+
+</nav>
+
+<!-- iOSインストール案内 -->
+<div class="install-banner" id="install-banner">
+  <strong>📱 ホーム画面に追加してアプリとして使えます</strong>
+  Safariの場合：画面下の「共有」ボタン →「ホーム画面に追加」をタップしてください
+</div>
+
+<div class="version" id="version-label">Ver. 1.0 · Rose Garden Co., Ltd 業務システム</div>
+
+<script>
+  // 今日の日付
+  const d = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  document.getElementById('today-strip').textContent =
+    d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（' + days[d.getDay()] + '）';
+
+  // Service Worker 登録
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW error:', err));
+  }
+
+  // オフライン検知
+  function updateOnlineStatus() {
+    document.getElementById('offline-banner').style.display = navigator.onLine ? 'none' : 'block';
+  }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // iOSのSafariでホーム画面未追加の場合にバナー表示
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !isInStandaloneMode) {
+    document.getElementById('install-banner').style.display = 'block';
+  }
+</script>
+</body>
+</html>
