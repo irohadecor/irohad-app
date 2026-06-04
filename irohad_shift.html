@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>スタッフ管理 — IROHAD'ECOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Shippori+Mincho:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F2ECE0;--surface:#FCFAF4;--parchment:#FBF7EF;
+  --gold:#BE4128;--gold-light:#E9C6B7;--gold-dark:#8A2E1A;
+  --ink:#191512;--ink-mid:#5C5247;--ink-light:#8E8270;
+  --border:#DAD0BE;--border-light:#EDE5D4;
+  --green:#2D7A4F;--green-light:#E8F5EE;
+  --rose:#C05A6E;--rose-light:#FAEAED;
+  --blue:#3A6EA8;--blue-light:#EAF0FB;
+  --amber:#C87E2A;--amber-light:#FEF3E2;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* ヘッダー */
+.header{background:var(--ink);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.header-left{display:flex;align-items:baseline;gap:10px;}
+.brand{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.3em;color:var(--gold-light);text-transform:uppercase;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#fff;letter-spacing:0.06em;}
+.header-date{font-size:11px;color:var(--gold-light);letter-spacing:0.08em;}
+
+/* タブ */
+.tabs{display:flex;background:var(--parchment);border-bottom:1px solid var(--border);overflow-x:auto;}
+.tab{padding:11px 18px;font-size:12px;letter-spacing:0.08em;color:var(--ink-light);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.tab.active{color:var(--ink);border-bottom-color:var(--gold);font-weight:500;}
+
+.main{max-width:960px;margin:0 auto;padding:1.5rem;}
+.view{display:none;}.view.active{display:block;}
+
+/* 週ナビ */
+.week-nav{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.wnav-btn{background:none;border:1px solid var(--border);color:var(--ink-mid);width:30px;height:30px;border-radius:2px;cursor:pointer;font-size:15px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.wnav-btn:hover{border-color:var(--gold);color:var(--gold);}
+.week-label{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--ink);letter-spacing:0.06em;}
+.today-btn{padding:5px 14px;background:none;border:1px solid var(--border);border-radius:99px;font-size:11px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;}
+.today-btn:hover{border-color:var(--gold);color:var(--gold);}
+.add-btn{margin-left:auto;padding:8px 18px;background:var(--gold);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.add-btn:hover{background:var(--gold-dark);}
+
+/* スタッフフィルター */
+.staff-filter{display:flex;gap:7px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.sf-chip{padding:6px 14px;border:1px solid var(--border);border-radius:99px;font-size:12px;color:var(--ink-mid);cursor:pointer;transition:all 0.15s;background:var(--surface);user-select:none;}
+.sf-chip:hover{border-color:var(--gold-light);}
+.sf-chip.active{color:#fff;border-color:transparent;font-weight:500;}
+
+/* タイムライングリッド */
+.timeline-wrap{overflow-x:auto;}
+.timeline{min-width:700px;}
+.tl-header{display:grid;grid-template-columns:80px repeat(7,1fr);border-bottom:2px solid var(--border);margin-bottom:2px;}
+.tl-head-cell{padding:8px 4px;text-align:center;font-size:11px;letter-spacing:0.06em;color:var(--ink-light);}
+.tl-head-cell.today{color:var(--gold);font-weight:500;}
+.tl-head-date{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;display:block;color:var(--ink);}
+.tl-head-cell.today .tl-head-date{color:var(--gold);}
+
+.tl-row{display:grid;grid-template-columns:80px repeat(7,1fr);min-height:80px;border-bottom:1px solid var(--border-light);}
+.tl-row:hover{background:rgba(184,152,106,0.03);}
+.tl-staff-cell{padding:10px 8px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border-light);}
+.staff-name{font-size:12px;font-weight:500;color:var(--ink);}
+.staff-free{font-size:10px;color:var(--ink-light);margin-top:2px;}
+.tl-day-cell{padding:4px;position:relative;border-right:1px solid var(--border-light);}
+.tl-day-cell:last-child{border-right:none;}
+
+/* シフトブロック */
+.shift-block{border-radius:3px;padding:6px 8px;margin-bottom:3px;cursor:pointer;transition:all 0.15s;position:relative;}
+.shift-block:hover{filter:brightness(0.95);transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.sb-time{font-size:10px;opacity:0.8;margin-bottom:2px;}
+.sb-task{font-size:11px;font-weight:500;line-height:1.3;}
+.sb-place{font-size:10px;opacity:0.75;margin-top:1px;}
+.sb-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.15);color:#fff;border:none;border-radius:50%;width:14px;height:14px;font-size:9px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1;}
+.shift-block:hover .sb-del{display:flex;}
+
+/* 空き時間表示 */
+.free-badge{font-size:10px;color:var(--ink-light);text-align:center;padding:8px 4px;border:1px dashed var(--border-light);border-radius:3px;margin:2px;cursor:pointer;transition:all 0.15s;}
+.free-badge:hover{border-color:var(--gold-light);color:var(--gold);}
+
+/* ===== モーダル ===== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,40,32,0.6);z-index:100;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:6px;width:100%;max-width:460px;overflow:hidden;animation:fadeUp 0.25s ease;}
+@keyframes fadeUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{background:var(--ink);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#fff;letter-spacing:0.06em;}
+.modal-close{background:none;border:1px solid rgba(255,255,255,0.2);color:var(--gold-light);width:28px;height:28px;border-radius:2px;cursor:pointer;font-size:14px;}
+.modal-body{padding:1.25rem 1.5rem;}
+.mfield{margin-bottom:12px;}
+.mfield label{display:block;font-size:10px;letter-spacing:0.12em;color:var(--ink-light);text-transform:uppercase;margin-bottom:5px;}
+.mfield input,.mfield select,.mfield textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:3px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:300;color:var(--ink);background:var(--bg);}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,152,106,0.1);}
+.mfield textarea{resize:vertical;min-height:60px;}
+.mfield-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border-light);display:flex;gap:8px;justify-content:flex-end;}
+.btn-cancel{padding:9px 18px;background:none;border:1px solid var(--border);border-radius:3px;font-size:12px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.btn-save{padding:9px 22px;background:var(--gold);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:500;}
+.btn-save:hover{background:var(--gold-dark);}
+
+/* ===== スタッフ管理タブ ===== */
+.staff-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:1.5rem;}
+.staff-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.25rem;display:flex;align-items:center;gap:12px;}
+.staff-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:#fff;flex-shrink:0;}
+.staff-info{flex:1;}
+.staff-info-name{font-size:14px;font-weight:500;color:var(--ink);}
+.staff-info-role{font-size:11px;color:var(--ink-light);margin-top:2px;}
+.staff-edit-btn{background:none;border:1px solid var(--border);border-radius:2px;padding:4px 10px;font-size:11px;color:var(--ink-light);cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.15s;}
+.staff-edit-btn:hover{border-color:var(--gold);color:var(--gold);}
+.add-staff-btn{border:1px dashed var(--border);border-radius:6px;padding:1.25rem;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--ink-light);cursor:pointer;transition:all 0.15s;background:none;}
+.add-staff-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ===== 空き時間一覧タブ ===== */
+.free-table{width:100%;border-collapse:collapse;font-size:13px;}
+.free-table th{font-size:10px;letter-spacing:0.1em;color:var(--ink-light);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;font-weight:400;background:var(--parchment);}
+.free-table td{padding:10px 12px;border-bottom:1px solid var(--border-light);}
+.free-table tr:hover td{background:var(--parchment);}
+.free-chip{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;background:var(--green-light);color:var(--green);border:1px solid rgba(45,122,79,0.2);}
+.busy-chip{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;background:var(--rose-light);color:var(--rose);border:1px solid rgba(192,90,110,0.2);}
+
+@media(max-width:640px){.main{padding:1rem;}.tl-staff-cell{padding:6px 4px;}.staff-name{font-size:11px;}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <span class="brand">IROHAD'ECOR</span>
+    <span class="page-title">スタッフ管理</span>
+  </div>
+  <span class="header-date" id="header-date"></span>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('schedule',this)">📅 週間スケジュール</button>
+  <button class="tab" onclick="switchTab('free',this)">⏰ 空き時間一覧</button>
+  <button class="tab" onclick="switchTab('staff',this)">👤 スタッフ管理</button>
+</div>
+
+<main class="main">
+
+  <!-- ===== 週間スケジュール ===== -->
+  <div class="view active" id="view-schedule">
+
+    <div class="week-nav">
+      <button class="wnav-btn" onclick="changeWeek(-1)">‹</button>
+      <span class="week-label" id="week-label"></span>
+      <button class="wnav-btn" onclick="changeWeek(1)">›</button>
+      <button class="today-btn" onclick="goToday()">今週</button>
+      <button class="add-btn" onclick="openAddModal()">＋ シフト追加</button>
+    </div>
+
+    <div class="staff-filter" id="staff-filter"></div>
+
+    <div class="timeline-wrap">
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+  </div>
+
+  <!-- ===== 空き時間一覧 ===== -->
+  <div class="view" id="view-free">
+    <div class="week-nav">
+      <button class="wnav-btn" onclick="changeWeek(-1)">‹</button>
+      <span class="week-label" id="free-week-label"></span>
+      <button class="wnav-btn" onclick="changeWeek(1)">›</button>
+      <button class="today-btn" onclick="goToday()">今週</button>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+      <table class="free-table">
+        <thead>
+          <tr>
+            <th>スタッフ</th>
+            <th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th><th>日</th>
+          </tr>
+        </thead>
+        <tbody id="free-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== スタッフ管理 ===== -->
+  <div class="view" id="view-staff">
+    <div class="staff-cards" id="staff-cards"></div>
+  </div>
+
+</main>
+
+<!-- シフト追加・編集モーダル -->
+<div class="modal-overlay" id="shift-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">シフトを追加</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mfield">
+        <label>スタッフ</label>
+        <select id="m-staff"></select>
+      </div>
+      <div class="mfield">
+        <label>日付</label>
+        <input type="date" id="m-date"/>
+      </div>
+      <div class="mfield-row">
+        <div class="mfield">
+          <label>開始時刻</label>
+          <input type="time" id="m-start" value="09:30"/>
+        </div>
+        <div class="mfield">
+          <label>終了時刻</label>
+          <input type="time" id="m-end" value="18:00"/>
+        </div>
+      </div>
+      <div class="mfield">
+        <label>作業内容</label>
+        <input type="text" id="m-task" placeholder="例：現調・施工・デザイン作業"/>
+      </div>
+      <div class="mfield">
+        <label>場所</label>
+        <select id="m-place">
+          <option value="">選択してください</option>
+          <option>モデルルーム</option>
+          <option>LABO</option>
+          <option>外出（現調）</option>
+          <option>外出（施工）</option>
+          <option>外出（仕入れ）</option>
+          <option>テレワーク</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="mfield">
+        <label>メモ（任意）</label>
+        <textarea id="m-memo" placeholder="例：〇〇様ウェディング準備"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-save" onclick="saveShift()">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- スタッフ編集モーダル -->
+<div class="modal-overlay" id="staff-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="staff-modal-title">スタッフを追加</span>
+      <button class="modal-close" onclick="closeStaffModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mfield">
+        <label>名前</label>
+        <input type="text" id="sm-name" placeholder="例：田中"/>
+      </div>
+      <div class="mfield">
+        <label>役職・ポジション</label>
+        <input type="text" id="sm-role" placeholder="例：デザイナー・施工担当"/>
+      </div>
+      <div class="mfield">
+        <label>アバターカラー</label>
+        <select id="sm-color">
+          <option value="#B8986A">ゴールド</option>
+          <option value="#2D7A4F">グリーン</option>
+          <option value="#3A6EA8">ブルー</option>
+          <option value="#C05A6E">ローズ</option>
+          <option value="#C87E2A">アンバー</option>
+          <option value="#6B6158">グレー</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeStaffModal()">キャンセル</button>
+      <button class="btn-save" onclick="saveStaff()">保存する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  データ管理
+// ============================================================
+const STORAGE_KEY_SHIFTS = 'irohad_shifts';
+const STORAGE_KEY_STAFF  = 'irohad_staff';
+
+function loadShifts(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY_SHIFTS)||'[]'); }catch(e){ return []; } }
+function saveShifts(d){ try{ localStorage.setItem(STORAGE_KEY_SHIFTS, JSON.stringify(d)); }catch(e){} }
+function loadStaff(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY_STAFF)||'null') || defaultStaff(); }catch(e){ return defaultStaff(); } }
+function saveStaffData(d){ try{ localStorage.setItem(STORAGE_KEY_STAFF, JSON.stringify(d)); }catch(e){} }
+
+function defaultStaff(){
+  return [
+    {id:'s1', name:'田中', role:'リーダー', color:'#B8986A'},
+    {id:'s2', name:'佐藤', role:'デザイナー', color:'#2D7A4F'},
+    {id:'s3', name:'鈴木', role:'施工担当', color:'#3A6EA8'},
+    {id:'s4', name:'山田', role:'施工担当', color:'#C05A6E'},
+    {id:'s5', name:'中村', role:'アシスタント', color:'#C87E2A'},
+  ];
+}
+
+// ============================================================
+//  週管理
+// ============================================================
+let weekOffset = 0;
+const DAY_NAMES = ['月','火','水','木','金','土','日'];
+
+function getWeekDates(offset=0){
+  const today = new Date();
+  const dow = today.getDay(); // 0=日
+  const mon = new Date(today);
+  mon.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1) + offset * 7);
+  return Array.from({length:7}, (_,i) => {
+    const d = new Date(mon); d.setDate(mon.getDate()+i); return d;
+  });
+}
+
+function dateKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function isToday(d){ return dateKey(d) === dateKey(new Date()); }
+
+function changeWeek(delta){ weekOffset += delta; renderAll(); }
+function goToday(){ weekOffset = 0; renderAll(); }
+
+// ============================================================
+//  フィルター
+// ============================================================
+let activeStaffFilter = 'all';
+
+function renderStaffFilter(){
+  const staff = loadStaff();
+  const el = document.getElementById('staff-filter');
+  el.innerHTML = `<span class="sf-chip ${activeStaffFilter==='all'?'active':''}" style="${activeStaffFilter==='all'?'background:var(--ink);':''}" onclick="setFilter('all')">全員</span>` +
+    staff.map(s => `<span class="sf-chip ${activeStaffFilter===s.id?'active':''}" style="${activeStaffFilter===s.id?`background:${s.color};`:''}" onclick="setFilter('${s.id}')">${s.name}</span>`).join('');
+}
+
+function setFilter(id){ activeStaffFilter = id; renderAll(); }
+
+// ============================================================
+//  タイムライン描画
+// ============================================================
+function renderTimeline(){
+  const dates = getWeekDates(weekOffset);
+  const shifts = loadShifts();
+  const staff = loadStaff();
+
+  // 週ラベル
+  const wl = dates[0].getMonth()+1 + '月' + dates[0].getDate() + '日 〜 ' + (dates[6].getMonth()+1) + '月' + dates[6].getDate() + '日';
+  document.getElementById('week-label').textContent = wl;
+  document.getElementById('free-week-label').textContent = wl;
+
+  const filteredStaff = activeStaffFilter === 'all' ? staff : staff.filter(s => s.id === activeStaffFilter);
+
+  // ヘッダー
+  let html = `<div class="tl-header">
+    <div class="tl-head-cell"></div>
+    ${dates.map(d => `<div class="tl-head-cell ${isToday(d)?'today':''}">
+      <span class="tl-head-date">${d.getDate()}</span>
+      ${DAY_NAMES[dates.indexOf(d)]}
+    </div>`).join('')}
+  </div>`;
+
+  // 行
+  filteredStaff.forEach(s => {
+    html += `<div class="tl-row">
+      <div class="tl-staff-cell">
+        <div class="staff-name">${s.name}</div>
+        <div class="staff-free" id="free-${s.id}"></div>
+      </div>
+      ${dates.map(d => {
+        const key = dateKey(d);
+        const dayShifts = shifts.filter(sh => sh.staffId === s.id && sh.date === key);
+        let cellHtml = dayShifts.map(sh => `
+          <div class="shift-block" style="background:${s.color}20;border-left:3px solid ${s.color};" onclick="editShift('${sh.id}')">
+            <button class="sb-del" onclick="event.stopPropagation();deleteShift('${sh.id}')">×</button>
+            <div class="sb-time">${sh.start}〜${sh.end}</div>
+            <div class="sb-task">${sh.task}</div>
+            <div class="sb-place">📍 ${sh.place}</div>
+          </div>
+        `).join('');
+        if(dayShifts.length === 0){
+          cellHtml = `<div class="free-badge" onclick="quickAdd('${s.id}','${key}')">＋</div>`;
+        }
+        return `<div class="tl-day-cell ${isToday(d)?'':''}">` + cellHtml + `</div>`;
+      }).join('')}
+    </div>`;
+  });
+
+  document.getElementById('timeline').innerHTML = html;
+}
+
+// ============================================================
+//  空き時間一覧
+// ============================================================
+function renderFreeTable(){
+  const dates = getWeekDates(weekOffset);
+  const shifts = loadShifts();
+  const staff = loadStaff();
+
+  const tbody = document.getElementById('free-tbody');
+  tbody.innerHTML = staff.map(s => {
+    const cells = dates.map(d => {
+      const key = dateKey(d);
+      const dayShifts = shifts.filter(sh => sh.staffId === s.id && sh.date === key);
+      if(dayShifts.length === 0) return `<td><span class="free-chip">空き</span></td>`;
+      const times = dayShifts.map(sh => sh.start+'〜'+sh.end).join('<br>');
+      return `<td><span class="busy-chip" style="font-size:10px;">${times}</span></td>`;
+    }).join('');
+    return `<tr>
+      <td><span style="display:inline-flex;align-items:center;gap:6px;">
+        <span style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0;display:inline-block;"></span>
+        ${s.name}
+      </span></td>
+      ${cells}
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+//  スタッフ管理
+// ============================================================
+function renderStaffCards(){
+  const staff = loadStaff();
+  const el = document.getElementById('staff-cards');
+  el.innerHTML = staff.map(s => `
+    <div class="staff-card">
+      <div class="staff-avatar" style="background:${s.color}">${s.name.slice(0,1)}</div>
+      <div class="staff-info">
+        <div class="staff-info-name">${s.name}</div>
+        <div class="staff-info-role">${s.role}</div>
+      </div>
+      <button class="staff-edit-btn" onclick="openStaffModal('${s.id}')">編集</button>
+    </div>
+  `).join('') +
+  `<div class="add-staff-btn" onclick="openStaffModal(null)">
+    <span style="font-size:18px;color:var(--gold);">＋</span> スタッフを追加
+  </div>`;
+}
+
+// ============================================================
+//  モーダル操作
+// ============================================================
+let editingShiftId = null;
+
+function openAddModal(staffId='', date=''){
+  editingShiftId = null;
+  document.getElementById('modal-title').textContent = 'シフトを追加';
+  populateStaffSelect();
+  if(staffId) document.getElementById('m-staff').value = staffId;
+  document.getElementById('m-date').value = date || dateKey(new Date());
+  document.getElementById('m-start').value = '09:30';
+  document.getElementById('m-end').value = '18:00';
+  document.getElementById('m-task').value = '';
+  document.getElementById('m-place').value = '';
+  document.getElementById('m-memo').value = '';
+  document.getElementById('shift-modal').classList.add('open');
+}
+
+function quickAdd(staffId, date){
+  openAddModal(staffId, date);
+}
+
+function editShift(id){
+  const shifts = loadShifts();
+  const sh = shifts.find(s => s.id === id);
+  if(!sh) return;
+  editingShiftId = id;
+  document.getElementById('modal-title').textContent = 'シフトを編集';
+  populateStaffSelect();
+  document.getElementById('m-staff').value = sh.staffId;
+  document.getElementById('m-date').value = sh.date;
+  document.getElementById('m-start').value = sh.start;
+  document.getElementById('m-end').value = sh.end;
+  document.getElementById('m-task').value = sh.task;
+  document.getElementById('m-place').value = sh.place;
+  document.getElementById('m-memo').value = sh.memo||'';
+  document.getElementById('shift-modal').classList.add('open');
+}
+
+function populateStaffSelect(){
+  const staff = loadStaff();
+  const sel = document.getElementById('m-staff');
+  sel.innerHTML = staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+function closeModal(){ document.getElementById('shift-modal').classList.remove('open'); }
+
+function saveShift(){
+  const staffId = document.getElementById('m-staff').value;
+  const date    = document.getElementById('m-date').value;
+  const start   = document.getElementById('m-start').value;
+  const end     = document.getElementById('m-end').value;
+  const task    = document.getElementById('m-task').value.trim();
+  const place   = document.getElementById('m-place').value;
+  const memo    = document.getElementById('m-memo').value.trim();
+
+  if(!task){ alert('作業内容を入力してください'); return; }
+  if(!place){ alert('場所を選択してください'); return; }
+
+  let shifts = loadShifts();
+  if(editingShiftId){
+    shifts = shifts.map(s => s.id === editingShiftId ? {...s, staffId, date, start, end, task, place, memo} : s);
+  } else {
+    shifts.push({ id: 'sh'+Date.now(), staffId, date, start, end, task, place, memo });
+  }
+  saveShifts(shifts);
+  closeModal();
+  renderAll();
+}
+
+function deleteShift(id){
+  if(!confirm('このシフトを削除しますか？')) return;
+  let shifts = loadShifts().filter(s => s.id !== id);
+  saveShifts(shifts);
+  renderAll();
+}
+
+// スタッフモーダル
+let editingStaffId = null;
+function openStaffModal(id){
+  editingStaffId = id;
+  const staff = loadStaff();
+  const s = id ? staff.find(st => st.id === id) : null;
+  document.getElementById('staff-modal-title').textContent = id ? 'スタッフを編集' : 'スタッフを追加';
+  document.getElementById('sm-name').value = s ? s.name : '';
+  document.getElementById('sm-role').value = s ? s.role : '';
+  document.getElementById('sm-color').value = s ? s.color : '#B8986A';
+  document.getElementById('staff-modal').classList.add('open');
+}
+function closeStaffModal(){ document.getElementById('staff-modal').classList.remove('open'); }
+function saveStaff(){
+  const name = document.getElementById('sm-name').value.trim();
+  const role = document.getElementById('sm-role').value.trim();
+  const color = document.getElementById('sm-color').value;
+  if(!name){ alert('名前を入力してください'); return; }
+  let staff = loadStaff();
+  if(editingStaffId){
+    staff = staff.map(s => s.id === editingStaffId ? {...s, name, role, color} : s);
+  } else {
+    staff.push({ id: 's'+Date.now(), name, role, color });
+  }
+  saveStaffData(staff);
+  closeStaffModal();
+  renderAll();
+}
+
+// ============================================================
+//  タブ切り替え
+// ============================================================
+function switchTab(name, btn){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  btn.classList.add('active');
+  renderAll();
+}
+
+// ============================================================
+//  全描画
+// ============================================================
+function renderAll(){
+  renderStaffFilter();
+  renderTimeline();
+  renderFreeTable();
+  renderStaffCards();
+}
+
+// 初期化
+const d = new Date();
+document.getElementById('header-date').textContent = d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+['日','月','火','水','木','金','土'][d.getDay()]+'）';
+renderAll();
+</script>
+</body>
+</html>
