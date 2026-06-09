@@ -41,13 +41,16 @@
   /* ===== TABS ===== */
   .tabs {
     display: flex; border-bottom: 1px solid var(--border);
-    background: var(--parchment); padding: 0 2rem;
+    background: var(--parchment); padding: 0 1rem;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    padding: 12px 20px; font-size: 12px; letter-spacing: 0.1em;
+    padding: 12px 16px; font-size: 12px; letter-spacing: 0.06em;
     color: var(--ink-light); cursor: pointer; border-bottom: 2px solid transparent;
     transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none;
-    font-family: 'Noto Sans JP', sans-serif;
+    font-family: 'Noto Sans JP', sans-serif; white-space: nowrap; flex-shrink: 0;
   }
   .tab.active { color: var(--ink); border-bottom-color: var(--gold); font-weight: 500; }
   .tab:hover { color: var(--ink-mid); }
@@ -259,6 +262,7 @@
               <option value="ポピー">ポピー</option>
               <option value="TSUBOMI">TSUBOMI</option>
               <option value="mi.＆">mi.＆</option>
+              <option value="BLUEBERRYWOOD">BLUEBERRYWOOD</option>
             </select>
           </div>
         </div>
@@ -272,9 +276,30 @@
             </div>
           </div>
           <div class="input-field">
-            <label>経費合計</label>
+            <label>資材費</label>
             <div class="unit-wrap">
-              <input type="number" id="f-expense" placeholder="0" min="0" step="1000" oninput="updateProfit()" />
+              <input type="number" id="f-expense-material" placeholder="0" min="0" step="1000" oninput="calcExpenseTotal()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>人件費</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-expense-labor" placeholder="0" min="0" step="1000" oninput="calcExpenseTotal()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>交通費</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-expense-transport" placeholder="0" min="0" step="1000" oninput="calcExpenseTotal()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>経費合計（自動計算）</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-expense" placeholder="0" readonly style="background:var(--parchment);color:var(--gold-dark);" oninput="updateProfit()" />
               <span class="unit">円</span>
             </div>
           </div>
@@ -309,11 +334,7 @@
           </div>
         </div>
 
-        <div class="input-grid" style="grid-template-columns:1fr 1fr;">
-          <div class="input-field">
-            <label>経費の内訳（任意）</label>
-            <input type="text" id="f-expense-note" placeholder="例：資材費80,000・交通費5,000" />
-          </div>
+        <div class="input-grid" style="grid-template-columns:1fr;">
           <div class="input-field">
             <label>メモ・特記事項（任意）</label>
             <input type="text" id="f-memo" placeholder="例：大型案件受注・スタッフ欠員" />
@@ -569,9 +590,12 @@ function saveRecord() {
   const division = document.getElementById('f-division').value;
   const sales = parseFloat(document.getElementById('f-sales').value) || 0;
   const expense = parseFloat(document.getElementById('f-expense').value) || 0;
+  const expenseMaterial = parseFloat(document.getElementById('f-expense-material').value) || 0;
+  const expenseLabor = parseFloat(document.getElementById('f-expense-labor').value) || 0;
+  const expenseTransport = parseFloat(document.getElementById('f-expense-transport').value) || 0;
   const count = parseInt(document.getElementById('f-count').value) || 0;
-  const expenseNote = document.getElementById('f-expense-note').value.trim();
   const memo = document.getElementById('f-memo').value.trim();
+  const expenseNote = \`資材費\${expenseMaterial.toLocaleString()}円・人件費\${expenseLabor.toLocaleString()}円・交通費\${expenseTransport.toLocaleString()}円\`;
 
   if (!staff) { alert('担当者名を入力してください。'); return; }
   if (!division) { alert('事業部を選択してください。'); return; }
@@ -583,7 +607,7 @@ function saveRecord() {
   const record = {
     date: todayKey(),
     staff, division,
-    sales, expense, count, expenseNote, memo,
+    sales, expense, expenseMaterial, expenseLabor, expenseTransport, count, expenseNote, memo,
     savedAt: new Date().toISOString()
   };
 
@@ -602,7 +626,7 @@ function saveRecord() {
 }
 
 function clearForm() {
-  ['f-staff','f-division','f-sales','f-expense','f-count','f-expense-note','f-memo'].forEach(id => {
+  ['f-staff','f-division','f-sales','f-expense-material','f-expense-labor','f-expense-transport','f-expense','f-count','f-memo'].forEach(id => {
     document.getElementById(id).value = '';
   });
   updateProfit();
@@ -760,7 +784,10 @@ function drawHistory(data) {
         <td style="font-size:12px;">${r.staff||'—'}</td>
         <td><span style="font-size:10px;padding:2px 8px;border-radius:99px;background:${divColor(r.division)+'22'};color:${divColor(r.division)};border:1px solid ${divColor(r.division)+'44'};">${r.division||'—'}</span></td>
         <td style="font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(r.sales||0)}</td>
-        <td style="font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(r.expense||0)}</td>
+        <td>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(r.expense||0)}</div>
+          ${r.expenseMaterial||r.expenseLabor||r.expenseTransport ? `<div style="font-size:9px;color:var(--ink-light);margin-top:2px;">資材${fmt(r.expenseMaterial||0)} / 人件費${fmt(r.expenseLabor||0)} / 交通${fmt(r.expenseTransport||0)}</div>` : ''}
+        </td>
         <td class="profit-cell ${profit>=0?'pos':'neg'}" style="font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(profit)}</td>
         <td style="font-size:12px;color:${margin>=30?'var(--green)':'var(--ink-mid)'};">${r.sales>0?margin+'%':'—'}</td>
         <td style="font-size:13px;">${r.count||0}件</td>
@@ -789,10 +816,10 @@ function editRecord(date) {
   updateProfit();
   // 入力タブに切り替え
   switchTab('input', document.querySelector('.tab'));
-  // 当日以外の編集は日付を変更して保存
-  if (date !== todayKey()) {
-    showToast('⚠ 過去のデータを編集中：今日の日付で上書きされます');
-  }
+  // 編集モードの日付をセット
+  const editDateInput = document.getElementById('input-date-select');
+  if (editDateInput) editDateInput.value = date;
+  showToast('✏️ ' + date + ' のデータを編集中');
 }
 
 function deleteRecord(date) {
@@ -815,8 +842,9 @@ const DIV_COLORS = {
   'ポピー':  '#C05A6E',
   'TSUBOMI': '#3A6EA8',
   'mi.＆':   '#C87E2A',
+  'BLUEBERRYWOOD': '#5B7FA6',
 };
-const DIVISIONS = ['Misel','IROHA','ポピー','TSUBOMI','mi.＆'];
+const DIVISIONS = ['Misel','IROHA','ポピー','TSUBOMI','mi.＆','BLUEBERRYWOOD'];
 
 function divColor(div){ return DIV_COLORS[div] || '#A09488'; }
 
