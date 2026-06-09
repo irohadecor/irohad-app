@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>日報 — IROHAD'ECOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+JP:wght@300;400;500&family=Shippori+Mincho:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #FAF8F4; --parchment: #F2EDE4;
+    --gold: #B8986A; --gold-light: #D4B896; --gold-dark: #8C6E42;
+    --ink: #2C2820; --ink-mid: #6B6158; --ink-light: #A09488;
+    --border: #DDD5C8; --border-light: #EDE8E0;
+    --green: #2D7A4F; --green-bg: #E8F5EE;
+    --red: #C0522A; --red-bg: #FAEAE3;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', sans-serif; font-weight: 300; background: var(--cream); color: var(--ink); min-height: 100vh; }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--ink);
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .header-left { display: flex; align-items: baseline; gap: 1rem; }
+  .brand { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 0.3em; color: var(--gold-light); text-transform: uppercase; }
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: #fff; letter-spacing: 0.08em; }
+  .today-badge {
+    font-size: 11px; color: var(--gold-light); letter-spacing: 0.1em;
+    background: rgba(184,152,106,0.15); border: 1px solid rgba(184,152,106,0.3);
+    padding: 4px 12px; border-radius: 99px;
+  }
+  .streak-badge {
+    font-size: 11px; color: #5DC887; letter-spacing: 0.08em;
+    background: rgba(45,122,79,0.15); border: 1px solid rgba(45,122,79,0.3);
+    padding: 4px 12px; border-radius: 99px;
+  }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+    background: var(--parchment); padding: 0 1rem;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 12px 16px; font-size: 12px; letter-spacing: 0.06em;
+    color: var(--ink-light); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none;
+    font-family: 'Noto Sans JP', sans-serif; white-space: nowrap; flex-shrink: 0;
+  }
+  .tab.active { color: var(--ink); border-bottom-color: var(--gold); font-weight: 500; }
+  .tab:hover { color: var(--ink-mid); }
+
+  /* ===== MAIN ===== */
+  .main { max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ===== 入力フォーム ===== */
+  .input-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 6px; overflow: hidden; margin-bottom: 1.5rem;
+  }
+  .input-card-header {
+    background: var(--ink); padding: 1rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .input-card-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: #fff; letter-spacing: 0.08em; }
+  .input-card-date { font-size: 11px; color: var(--gold-light); letter-spacing: 0.08em; }
+  .input-card-body { padding: 1.5rem; }
+
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .input-field label {
+    display: block; font-size: 10px; letter-spacing: 0.15em;
+    color: var(--ink-light); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .input-field .unit-wrap { position: relative; }
+  .input-field input[type="number"], .input-field input[type="text"], .input-field textarea, .input-field select {
+    width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+    border-radius: 3px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px; font-weight: 300; color: var(--ink);
+    background: var(--cream); transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+  }
+  .input-field input[type="number"] { padding-right: 36px; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.04em; }
+  .input-field input:focus, .input-field textarea:focus, .input-field select:focus {
+    outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,152,106,0.12);
+  }
+  .unit {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; color: var(--ink-light); pointer-events: none;
+  }
+  .input-field textarea { resize: vertical; min-height: 70px; font-size: 13px; }
+
+  /* 粗利プレビュー */
+  .profit-preview {
+    background: var(--parchment); border: 1px solid var(--border-light);
+    border-radius: 4px; padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .profit-item { text-align: center; }
+  .profit-label { font-size: 10px; letter-spacing: 0.12em; color: var(--ink-light); text-transform: uppercase; margin-bottom: 4px; }
+  .profit-value { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--ink); }
+  .profit-value.positive { color: var(--green); }
+  .profit-value.negative { color: var(--red); }
+  .profit-sep { color: var(--border); font-size: 20px; }
+
+  /* 送信ボタン */
+  .submit-row { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+  .btn-submit {
+    padding: 11px 28px; background: var(--gold); color: #fff;
+    border: none; border-radius: 3px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px; font-weight: 400; cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.06em;
+  }
+  .btn-submit:hover { background: var(--gold-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(140,110,66,0.3); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-clear {
+    padding: 11px 18px; background: none; color: var(--ink-light);
+    border: 1px solid var(--border); border-radius: 3px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 12px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-clear:hover { border-color: var(--ink-mid); color: var(--ink); }
+
+  /* 送信完了メッセージ */
+  .success-toast {
+    display: none; position: fixed; top: 20px; right: 20px; z-index: 100;
+    background: var(--ink); color: #fff; padding: 14px 20px;
+    border-radius: 4px; border-left: 3px solid var(--gold);
+    font-size: 12px; letter-spacing: 0.06em; animation: slideIn 0.3s ease;
+    box-shadow: 0 8px 24px rgba(44,40,32,0.3);
+  }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* ===== 今日の既存データ表示 ===== */
+  .today-record {
+    background: var(--green-bg); border: 1px solid rgba(45,122,79,0.25);
+    border-radius: 4px; padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+    font-size: 12px; color: var(--green); display: none;
+  }
+  .today-record-title { font-weight: 500; margin-bottom: 6px; font-size: 13px; }
+
+  /* ===== KPI サマリー ===== */
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border-light); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
+  .kpi-box { background: var(--white); padding: 1rem 1.25rem; }
+  .kpi-box-label { font-size: 9px; letter-spacing: 0.15em; color: var(--ink-light); text-transform: uppercase; margin-bottom: 6px; }
+  .kpi-box-val { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--ink); line-height: 1; }
+  .kpi-box-val .unit { position: static; transform: none; font-size: 11px; color: var(--ink-light); }
+  .kpi-box-sub { font-size: 10px; color: var(--ink-light); margin-top: 4px; }
+
+  /* ===== グラフ ===== */
+  .chart-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .chart-title { font-size: 11px; letter-spacing: 0.15em; color: var(--ink-light); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .chart-title::before { content: '✦'; color: var(--gold); font-size: 9px; }
+  .chart-area { position: relative; height: 160px; }
+  .bar-chart-horiz { display: flex; flex-direction: column; gap: 10px; }
+
+  /* 折れ線グラフ */
+  .line-svg { width: 100%; height: 100%; overflow: visible; }
+
+  /* ===== 履歴テーブル ===== */
+  .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .history-table th {
+    font-size: 10px; letter-spacing: 0.1em; color: var(--ink-light);
+    text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--border);
+    text-align: left; font-weight: 400; background: var(--parchment);
+  }
+  .history-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-light); color: var(--ink); vertical-align: middle; }
+  .history-table tr:last-child td { border-bottom: none; }
+  .history-table tr:hover td { background: var(--parchment); }
+  .profit-cell.pos { color: var(--green); font-weight: 500; }
+  .profit-cell.neg { color: var(--red); font-weight: 500; }
+  .edit-btn {
+    padding: 3px 10px; background: none; border: 1px solid var(--border);
+    border-radius: 2px; font-size: 10px; color: var(--ink-light); cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+  }
+  .edit-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .del-btn {
+    padding: 3px 10px; background: none; border: 1px solid var(--border);
+    border-radius: 2px; font-size: 10px; color: var(--ink-light); cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s; margin-left: 4px;
+  }
+  .del-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .empty-state { text-align: center; padding: 3rem; color: var(--ink-light); font-size: 13px; }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.4; }
+
+  /* 月選択 */
+  .month-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+  .mnav-btn { background: none; border: 1px solid var(--border); color: var(--ink-mid); width: 28px; height: 28px; border-radius: 2px; cursor: pointer; font-size: 14px; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .mnav-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .mnav-label { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--ink); letter-spacing: 0.08em; }
+
+  @media (max-width: 640px) {
+    .main { padding: 1.25rem; }
+    .input-grid { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .profit-preview { gap: 1rem; }
+  }
+</style>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#2C2820" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <span class="brand">IROHAD'ECOR</span>
+    <span class="page-title">日報</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <span class="today-badge" id="today-badge">—</span>
+    <span class="streak-badge" id="streak-badge">🔥 — 日連続</span>
+  </div>
+</header>
+
+<!-- タブ -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('input',this)">入力</button>
+  <button class="tab" onclick="switchTab('summary',this)">サマリー</button>
+  <button class="tab" onclick="switchTab('ranking',this)">🏆 事業部対抗</button>
+  <button class="tab" onclick="switchTab('history',this)">履歴</button>
+</div>
+
+<main class="main">
+
+  <!-- ===== 入力タブ ===== -->
+  <div class="view active" id="view-input">
+
+    <div class="today-record" id="today-record">
+      <div class="today-record-title">✓ 本日の記録があります（上書き保存されます）</div>
+      <div id="today-record-detail"></div>
+    </div>
+
+    <div class="input-card">
+      <div class="input-card-header">
+        <span class="input-card-title">本日の実績を入力</span>
+        <input type="date" id="input-date-select" style="font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:300;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:4px 8px;color:#fff;letter-spacing:0.06em;" />
+      </div>
+      <div class="input-card-body">
+
+        <div class="input-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="input-field">
+            <label>担当者名 <span style="color:var(--red)">*</span></label>
+            <input type="text" id="f-staff" placeholder="例：田中" />
+          </div>
+          <div class="input-field">
+            <label>事業部 <span style="color:var(--red)">*</span></label>
+            <select id="f-division">
+              <option value="">選択してください</option>
+              <option value="Misel">Misel</option>
+              <option value="IROHA">IROHA</option>
+              <option value="ポピー">ポピー</option>
+              <option value="TSUBOMI">TSUBOMI</option>
+              <option value="mi.＆">mi.＆</option>
+              <option value="BLUEBERRYWOOD">BLUEBERRYWOOD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-field">
+            <label>売上合計</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-sales" placeholder="0" min="0" step="1000" oninput="updateProfit()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>資材費</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-expense-material" placeholder="0" min="0" step="1000" oninput="calcExpenseTotal()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>人件費</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-expense-labor" placeholder="0" min="0" step="1000" oninput="calcExpenseTotal()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>交通費</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-expense-transport" placeholder="0" min="0" step="1000" oninput="calcExpenseTotal()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>経費合計（自動計算）</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-expense" placeholder="0" readonly style="background:var(--parchment);color:var(--gold-dark);" oninput="updateProfit()" />
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="input-field">
+            <label>案件数</label>
+            <div class="unit-wrap">
+              <input type="number" id="f-count" placeholder="0" min="0" step="1" />
+              <span class="unit">件</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 粗利プレビュー -->
+        <div class="profit-preview">
+          <div class="profit-item">
+            <div class="profit-label">売上</div>
+            <div class="profit-value" id="prev-sales">0<span style="font-size:13px;color:var(--ink-light)">円</span></div>
+          </div>
+          <span class="profit-sep">−</span>
+          <div class="profit-item">
+            <div class="profit-label">経費</div>
+            <div class="profit-value" id="prev-expense">0<span style="font-size:13px;color:var(--ink-light)">円</span></div>
+          </div>
+          <span class="profit-sep">=</span>
+          <div class="profit-item">
+            <div class="profit-label">粗利</div>
+            <div class="profit-value positive" id="prev-profit">0<span style="font-size:13px;">円</span></div>
+          </div>
+          <div class="profit-item" style="margin-left:auto;">
+            <div class="profit-label">粗利率</div>
+            <div class="profit-value" id="prev-margin" style="font-size:30px;">—</div>
+          </div>
+        </div>
+
+        <div class="input-grid" style="grid-template-columns:1fr;">
+          <div class="input-field">
+            <label>メモ・特記事項（任意）</label>
+            <input type="text" id="f-memo" placeholder="例：大型案件受注・スタッフ欠員" />
+          </div>
+        </div>
+
+        <div class="submit-row">
+          <button class="btn-clear" onclick="clearForm()">クリア</button>
+          <button class="btn-submit" onclick="saveRecord()">✦ 保存する</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== サマリータブ ===== -->
+  <div class="view" id="view-summary">
+    <div class="month-nav">
+      <button class="mnav-btn" onclick="changeViewMonth(-1)">‹</button>
+      <span class="mnav-label" id="view-month-label">—</span>
+      <button class="mnav-btn" onclick="changeViewMonth(1)">›</button>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-row">
+      <div class="kpi-box">
+        <div class="kpi-box-label">月間売上</div>
+        <div class="kpi-box-val" id="s-sales">—<span class="unit">万円</span></div>
+        <div class="kpi-box-sub" id="s-sales-sub">—</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-box-label">月間経費</div>
+        <div class="kpi-box-val" id="s-expense">—<span class="unit">万円</span></div>
+        <div class="kpi-box-sub" id="s-expense-sub">—</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-box-label">月間粗利</div>
+        <div class="kpi-box-val" id="s-profit">—<span class="unit">万円</span></div>
+        <div class="kpi-box-sub" id="s-margin-sub">粗利率 —</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-box-label">月間案件数</div>
+        <div class="kpi-box-val" id="s-count">—<span class="unit">件</span></div>
+        <div class="kpi-box-sub" id="s-avg-sub">平均単価 —</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-box-label">入力日数</div>
+        <div class="kpi-box-val" id="s-days">—<span class="unit">日</span></div>
+        <div class="kpi-box-sub" id="s-days-sub">—</div>
+      </div>
+    </div>
+
+    <!-- 売上グラフ -->
+    <div class="chart-wrap">
+      <div class="chart-title">日別 売上・粗利 推移</div>
+      <div class="chart-area">
+        <svg class="line-svg" id="line-chart" viewBox="0 0 800 140" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#B8986A" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#B8986A" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="profitGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2D7A4F" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#2D7A4F" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <text x="400" y="75" text-anchor="middle" font-size="12" fill="#A09488" font-family="Noto Sans JP">データなし</text>
+        </svg>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--ink-light);">
+        <span><span style="display:inline-block;width:20px;height:2px;background:var(--gold);vertical-align:middle;margin-right:4px;"></span>売上</span>
+        <span><span style="display:inline-block;width:20px;height:2px;background:var(--green);vertical-align:middle;margin-right:4px;"></span>粗利</span>
+      </div>
+    </div>
+
+    <!-- 累計 -->
+    <div class="chart-wrap">
+      <div class="chart-title">月別 売上推移（全期間）</div>
+      <div class="chart-area" id="monthly-bars">
+        <div class="empty-state"><div class="empty-icon">📊</div>データなし</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===== 事業部対抗ランキングタブ ===== -->
+  <div class="view" id="view-ranking">
+    <div class="month-nav">
+      <button class="mnav-btn" onclick="changeViewMonth(-1)">‹</button>
+      <span class="mnav-label" id="rank-month-label">—</span>
+      <button class="mnav-btn" onclick="changeViewMonth(1)">›</button>
+    </div>
+    <div id="ranking-content"></div>
+  </div>
+
+  <!-- ===== 履歴タブ ===== -->
+  <div class="view" id="view-history">
+    <div class="month-nav">
+      <button class="mnav-btn" onclick="changeViewMonth(-1)">‹</button>
+      <span class="mnav-label" id="hist-month-label">—</span>
+      <button class="mnav-btn" onclick="changeViewMonth(1)">›</button>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>日付</th>
+            <th>担当</th>
+            <th>事業部</th>
+            <th>売上</th>
+            <th>経費</th>
+            <th>粗利</th>
+            <th>粗利率</th>
+            <th>案件数</th>
+            <th>メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="history-tbody">
+          <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div>データなし</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- トースト -->
+<div class="success-toast" id="toast"></div>
+
+<script>
+// ============================================================
+//  ストレージ管理（localStorage に蓄積）
+// ============================================================
+const STORAGE_KEY = 'irohad_daily_reports';
+
+function loadAll() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch(e) { return []; }
+}
+function saveAll(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) { alert('保存に失敗しました。ブラウザのストレージ容量をご確認ください。'); }
+}
+function todayKey() {
+  const sel = document.getElementById('input-date-select');
+  if (sel && sel.value) return sel.value;
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function fmt(num) {
+  return Math.round(num).toLocaleString();
+}
+function fmtMan(num) {
+  return (num / 10000).toFixed(1);
+}
+
+// ============================================================
+//  初期化
+// ============================================================
+let viewYear = new Date().getFullYear();
+let viewMonth = new Date().getMonth() + 1;
+
+function init() {
+  // 今日の日付表示
+  const d = new Date();
+  const label = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（' + ['日','月','火','水','木','金','土'][d.getDay()] + '）';
+  document.getElementById('today-badge').textContent = label;
+  // 日付選択inputに今日をセット
+  const dateInput = document.getElementById('input-date-select');
+  if (dateInput) {
+    const yy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    dateInput.value = yy + '-' + mm + '-' + dd;
+  }
+
+  // 連続入力日数
+  updateStreak();
+
+  // 今日のデータ確認
+  checkTodayRecord();
+
+  // サマリー更新
+  updateSummary();
+}
+
+function updateStreak() {
+  const all = loadAll();
+  if (all.length === 0) { document.getElementById('streak-badge').textContent = '初日'; return; }
+  const dates = [...new Set(all.map(r => r.date))].sort().reverse();
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    if (dates.includes(key)) { streak++; } else if (i > 0) { break; }
+  }
+  document.getElementById('streak-badge').textContent = '🔥 ' + streak + '日連続入力中';
+}
+
+function checkTodayRecord() {
+  const all = loadAll();
+  const today = todayKey();
+  const rec = all.find(r => r.date === today);
+  if (rec) {
+    const el = document.getElementById('today-record');
+    el.style.display = 'block';
+    document.getElementById('today-record-detail').textContent =
+      '売上 ' + fmt(rec.sales) + '円 ／ 経費 ' + fmt(rec.expense) + '円 ／ 案件数 ' + rec.count + '件';
+    // フォームに値をセット
+    document.getElementById('f-staff').value = rec.staff || '';
+    document.getElementById('f-division').value = rec.division || '';
+    document.getElementById('f-sales').value = rec.sales || '';
+    document.getElementById('f-expense').value = rec.expense || '';
+    document.getElementById('f-count').value = rec.count || '';
+    document.getElementById('f-expense-note').value = rec.expenseNote || '';
+    document.getElementById('f-memo').value = rec.memo || '';
+    updateProfit();
+  }
+}
+
+// ============================================================
+//  粗利リアルタイム計算
+// ============================================================
+function updateProfit() {
+  const s = parseFloat(document.getElementById('f-sales').value) || 0;
+  const e = parseFloat(document.getElementById('f-expense').value) || 0;
+  const profit = s - e;
+  const margin = s > 0 ? Math.round(profit / s * 100) : 0;
+
+  document.getElementById('prev-sales').innerHTML = fmt(s) + '<span style="font-size:13px;color:var(--ink-light)">円</span>';
+  document.getElementById('prev-expense').innerHTML = fmt(e) + '<span style="font-size:13px;color:var(--ink-light)">円</span>';
+
+  const profitEl = document.getElementById('prev-profit');
+  profitEl.className = 'profit-value ' + (profit >= 0 ? 'positive' : 'negative');
+  profitEl.innerHTML = fmt(profit) + '<span style="font-size:13px;">円</span>';
+
+  const marginEl = document.getElementById('prev-margin');
+  marginEl.className = 'profit-value ' + (margin >= 0 ? 'positive' : 'negative');
+  marginEl.style.fontSize = '30px';
+  marginEl.textContent = s > 0 ? margin + '%' : '—';
+}
+
+// ============================================================
+//  保存
+// ============================================================
+function saveRecord() {
+  const staff = document.getElementById('f-staff').value.trim();
+  const division = document.getElementById('f-division').value;
+  const sales = parseFloat(document.getElementById('f-sales').value) || 0;
+  const expense = parseFloat(document.getElementById('f-expense').value) || 0;
+  const expenseMaterial = parseFloat(document.getElementById('f-expense-material').value) || 0;
+  const expenseLabor = parseFloat(document.getElementById('f-expense-labor').value) || 0;
+  const expenseTransport = parseFloat(document.getElementById('f-expense-transport').value) || 0;
+  const count = parseInt(document.getElementById('f-count').value) || 0;
+  const memo = document.getElementById('f-memo').value.trim();
+  const expenseNote = \`資材費\${expenseMaterial.toLocaleString()}円・人件費\${expenseLabor.toLocaleString()}円・交通費\${expenseTransport.toLocaleString()}円\`;
+
+  if (!staff) { alert('担当者名を入力してください。'); return; }
+  if (!division) { alert('事業部を選択してください。'); return; }
+  if (sales === 0 && expense === 0 && count === 0) {
+    alert('売上・経費・案件数のいずれかを入力してください。');
+    return;
+  }
+
+  const record = {
+    date: todayKey(),
+    staff, division,
+    sales, expense, expenseMaterial, expenseLabor, expenseTransport, count, expenseNote, memo,
+    savedAt: new Date().toISOString()
+  };
+
+  let all = loadAll();
+  // 今日の既存レコードを削除して上書き
+  const saveDate = todayKey();
+  all = all.filter(r => r.date !== saveDate);
+  all.push({...record, date: saveDate});
+  all.sort((a,b) => a.date.localeCompare(b.date));
+  saveAll(all);
+
+  showToast('✓ 保存しました — ' + todayKey());
+  checkTodayRecord();
+  updateStreak();
+  updateSummary();
+}
+
+function clearForm() {
+  ['f-staff','f-division','f-sales','f-expense-material','f-expense-labor','f-expense-transport','f-expense','f-count','f-memo'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  updateProfit();
+}
+
+// ============================================================
+//  サマリー計算・グラフ描画
+// ============================================================
+function changeViewMonth(delta) {
+  viewMonth += delta;
+  if (viewMonth > 12) { viewMonth = 1; viewYear++; }
+  if (viewMonth < 1)  { viewMonth = 12; viewYear--; }
+  updateSummary();
+}
+
+function updateSummary() {
+  const label = viewYear + '年' + viewMonth + '月';
+  document.getElementById('view-month-label').textContent = label;
+  document.getElementById('hist-month-label').textContent = label;
+
+  const all = loadAll();
+  const monthData = all.filter(r => {
+    const parts = r.date.split('-');
+    return parseInt(parts[0]) === viewYear && parseInt(parts[1]) === viewMonth;
+  });
+
+  // KPI
+  const totalSales = monthData.reduce((s,r) => s + (r.sales||0), 0);
+  const totalExpense = monthData.reduce((s,r) => s + (r.expense||0), 0);
+  const totalProfit = totalSales - totalExpense;
+  const totalCount = monthData.reduce((s,r) => s + (r.count||0), 0);
+  const days = monthData.length;
+  const margin = totalSales > 0 ? Math.round(totalProfit / totalSales * 100) : 0;
+  const avgUnit = totalCount > 0 ? Math.round(totalSales / totalCount) : 0;
+
+  document.getElementById('s-sales').innerHTML = fmtMan(totalSales) + '<span class="unit">万円</span>';
+  document.getElementById('s-expense').innerHTML = fmtMan(totalExpense) + '<span class="unit">万円</span>';
+  document.getElementById('s-profit').innerHTML = fmtMan(totalProfit) + '<span class="unit">万円</span>';
+  document.getElementById('s-count').innerHTML = totalCount + '<span class="unit">件</span>';
+  document.getElementById('s-days').innerHTML = days + '<span class="unit">日</span>';
+  document.getElementById('s-sales-sub').textContent = days > 0 ? '日平均 ' + fmt(totalSales/days) + '円' : '—';
+  document.getElementById('s-expense-sub').textContent = days > 0 ? '日平均 ' + fmt(totalExpense/days) + '円' : '—';
+  document.getElementById('s-margin-sub').textContent = '粗利率 ' + (totalSales > 0 ? margin + '%' : '—');
+  document.getElementById('s-avg-sub').textContent = totalCount > 0 ? '平均単価 ' + fmt(avgUnit) + '円' : '—';
+
+  drawLineChart(monthData);
+  drawMonthlyBars(all);
+  drawHistory(monthData);
+  if(document.getElementById('view-ranking').classList.contains('active')) renderRanking();
+}
+
+// 日別折れ線グラフ
+function drawLineChart(data) {
+  const svg = document.getElementById('line-chart');
+  if (data.length === 0) {
+    svg.innerHTML = '<text x="400" y="75" text-anchor="middle" font-size="12" fill="#A09488" font-family="Noto Sans JP">データなし</text>';
+    return;
+  }
+
+  const W = 800, H = 120, padL = 10, padR = 10, padT = 10, padB = 10;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+
+  const maxVal = Math.max(...data.map(r => Math.max(r.sales||0, r.expense||0)), 1);
+  const sorted = [...data].sort((a,b) => a.date.localeCompare(b.date));
+
+  const xOf = (i) => padL + (sorted.length === 1 ? innerW/2 : innerW / (sorted.length-1) * i);
+  const yOf = (v) => padT + innerH - (v / maxVal) * innerH;
+
+  const salesPts = sorted.map((r,i) => `${xOf(i)},${yOf(r.sales||0)}`);
+  const profitPts = sorted.map((r,i) => `${xOf(i)},${yOf((r.sales||0)-(r.expense||0))}`);
+
+  const salesArea = `M ${xOf(0)},${H} L ${salesPts.join(' L ')} L ${xOf(sorted.length-1)},${H} Z`;
+  const profitArea = `M ${xOf(0)},${H} L ${profitPts.join(' L ')} L ${xOf(sorted.length-1)},${H} Z`;
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="sG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#B8986A" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#B8986A" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="pG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2D7A4F" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#2D7A4F" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${salesArea}" fill="url(#sG)"/>
+    <path d="${profitArea}" fill="url(#pG)"/>
+    <polyline points="${salesPts.join(' ')}" fill="none" stroke="#B8986A" stroke-width="2"/>
+    <polyline points="${profitPts.join(' ')}" fill="none" stroke="#2D7A4F" stroke-width="1.5" stroke-dasharray="4,3"/>
+    ${sorted.map((r,i) => `<circle cx="${xOf(i)}" cy="${yOf(r.sales||0)}" r="3" fill="#B8986A"/>`).join('')}
+  `;
+}
+
+// 月別棒グラフ
+function drawMonthlyBars(all) {
+  const monthly = {};
+  all.forEach(r => {
+    const key = r.date.slice(0,7);
+    if (!monthly[key]) monthly[key] = { sales:0, expense:0, count:0 };
+    monthly[key].sales += r.sales||0;
+    monthly[key].expense += r.expense||0;
+    monthly[key].count += r.count||0;
+  });
+
+  const entries = Object.entries(monthly).sort((a,b) => a[0].localeCompare(b[0])).slice(-12);
+  const el = document.getElementById('monthly-bars');
+
+  if (entries.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div>データなし</div>';
+    return;
+  }
+
+  const maxVal = Math.max(...entries.map(([,v]) => v.sales), 1);
+  el.style.height = 'auto';
+  el.innerHTML = entries.map(([key, v]) => {
+    const [yr, mo] = key.split('-');
+    const pct = Math.round(v.sales / maxVal * 100);
+    const profitPct = Math.round((v.sales - v.expense) / maxVal * 100);
+    const isCurrentView = parseInt(yr) === viewYear && parseInt(mo) === viewMonth;
+    return `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:11px;color:var(--ink-light);min-width:52px;${isCurrentView?'color:var(--gold);font-weight:500;':''}">${parseInt(mo)}月</span>
+        <div style="flex:1;position:relative;height:20px;background:rgba(0,0,0,0.04);border-radius:2px;overflow:hidden;">
+          <div style="position:absolute;left:0;top:0;height:100%;width:${pct}%;background:rgba(184,152,106,0.4);border-radius:2px;transition:width 0.4s;"></div>
+          <div style="position:absolute;left:0;top:0;height:100%;width:${profitPct}%;background:rgba(45,122,79,0.5);border-radius:2px;transition:width 0.4s;"></div>
+        </div>
+        <span style="font-size:12px;font-family:'Cormorant Garamond',serif;color:var(--ink);min-width:72px;text-align:right;">${fmtMan(v.sales)}万円</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// 履歴テーブル
+function drawHistory(data) {
+  const tbody = document.getElementById('history-tbody');
+  const sorted = [...data].sort((a,b) => b.date.localeCompare(a.date));
+
+  if (sorted.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">📋</div>この月のデータはありません</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = sorted.map(r => {
+    const profit = (r.sales||0) - (r.expense||0);
+    const margin = r.sales > 0 ? Math.round(profit/r.sales*100) : 0;
+    const dateObj = new Date(r.date);
+    const dayLabel = ['日','月','火','水','木','金','土'][dateObj.getDay()];
+    const isToday = r.date === todayKey();
+    return `
+      <tr>
+        <td style="font-size:12px;${isToday?'color:var(--gold);font-weight:500;':''}">
+          ${r.date.slice(5).replace('-','/')}（${dayLabel}）${isToday?'<span style="font-size:9px;color:var(--gold);margin-left:4px;">TODAY</span>':''}
+        </td>
+        <td style="font-size:12px;">${r.staff||'—'}</td>
+        <td><span style="font-size:10px;padding:2px 8px;border-radius:99px;background:${divColor(r.division)+'22'};color:${divColor(r.division)};border:1px solid ${divColor(r.division)+'44'};">${r.division||'—'}</span></td>
+        <td style="font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(r.sales||0)}</td>
+        <td>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(r.expense||0)}</div>
+          ${r.expenseMaterial||r.expenseLabor||r.expenseTransport ? `<div style="font-size:9px;color:var(--ink-light);margin-top:2px;">資材${fmt(r.expenseMaterial||0)} / 人件費${fmt(r.expenseLabor||0)} / 交通${fmt(r.expenseTransport||0)}</div>` : ''}
+        </td>
+        <td class="profit-cell ${profit>=0?'pos':'neg'}" style="font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(profit)}</td>
+        <td style="font-size:12px;color:${margin>=30?'var(--green)':'var(--ink-mid)'};">${r.sales>0?margin+'%':'—'}</td>
+        <td style="font-size:13px;">${r.count||0}件</td>
+        <td style="font-size:11px;color:var(--ink-light);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.memo||''}</td>
+        <td>
+          <button class="edit-btn" onclick="editRecord('${r.date}')">編集</button>
+          <button class="del-btn" onclick="deleteRecord('${r.date}')">削除</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ============================================================
+//  編集・削除
+// ============================================================
+function editRecord(date) {
+  const all = loadAll();
+  const rec = all.find(r => r.date === date);
+  if (!rec) return;
+  document.getElementById('f-sales').value = rec.sales||'';
+  document.getElementById('f-expense').value = rec.expense||'';
+  document.getElementById('f-count').value = rec.count||'';
+  document.getElementById('f-expense-note').value = rec.expenseNote||'';
+  document.getElementById('f-memo').value = rec.memo||'';
+  updateProfit();
+  // 入力タブに切り替え
+  switchTab('input', document.querySelector('.tab'));
+  // 編集モードの日付をセット
+  const editDateInput = document.getElementById('input-date-select');
+  if (editDateInput) editDateInput.value = date;
+  showToast('✏️ ' + date + ' のデータを編集中');
+}
+
+function deleteRecord(date) {
+  if (!confirm(date + ' のデータを削除しますか？')) return;
+  let all = loadAll();
+  all = all.filter(r => r.date !== date);
+  saveAll(all);
+  updateSummary();
+  checkTodayRecord();
+  showToast('削除しました');
+}
+
+
+// ============================================================
+//  事業部カラー
+// ============================================================
+const DIV_COLORS = {
+  'Misel':   '#B8986A',
+  'IROHA':   '#2D7A4F',
+  'ポピー':  '#C05A6E',
+  'TSUBOMI': '#3A6EA8',
+  'mi.＆':   '#C87E2A',
+  'BLUEBERRYWOOD': '#5B7FA6',
+};
+const DIVISIONS = ['Misel','IROHA','ポピー','TSUBOMI','mi.＆','BLUEBERRYWOOD'];
+
+function divColor(div){ return DIV_COLORS[div] || '#A09488'; }
+
+// ============================================================
+//  事業部ランキング描画
+// ============================================================
+function renderRanking() {
+  const label = viewYear + '年' + viewMonth + '月';
+  document.getElementById('rank-month-label').textContent = label;
+
+  const all = loadAll();
+  const monthData = all.filter(r => {
+    const parts = r.date.split('-');
+    return parseInt(parts[0]) === viewYear && parseInt(parts[1]) === viewMonth;
+  });
+
+  // 事業部別集計
+  const stats = {};
+  DIVISIONS.forEach(d => { stats[d] = { sales:0, profit:0, count:0, days:new Set(), records:[] }; });
+
+  monthData.forEach(r => {
+    const d = r.division;
+    if(!stats[d]) return;
+    stats[d].sales += r.sales||0;
+    stats[d].profit += (r.sales||0) - (r.expense||0);
+    stats[d].count += r.count||0;
+    stats[d].days.add(r.date);
+    stats[d].records.push(r);
+  });
+
+  // 売上順ソート
+  const ranked = DIVISIONS.map(d => ({ name:d, ...stats[d], days: stats[d].days.size }))
+    .sort((a,b) => b.sales - a.sales);
+
+  const maxSales = Math.max(...ranked.map(r => r.sales), 1);
+
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+
+  const el = document.getElementById('ranking-content');
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:1.5rem;">
+      ${ranked.map((d,i) => `
+        <div style="background:var(--white);border:2px solid ${i===0?divColor(d.name):'var(--border)'};border-radius:8px;padding:1.25rem;text-align:center;position:relative;${i===0?'box-shadow:0 4px 20px '+divColor(d.name)+'33;':''}">
+          <div style="font-size:22px;margin-bottom:4px;">${medals[i]}</div>
+          <div style="font-size:11px;letter-spacing:0.1em;padding:3px 10px;border-radius:99px;background:${divColor(d.name)}22;color:${divColor(d.name)};border:1px solid ${divColor(d.name)}44;display:inline-block;margin-bottom:8px;">${d.name}</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--ink);line-height:1;">${fmtMan(d.sales)}</div>
+          <div style="font-size:10px;color:var(--ink-light);margin-bottom:6px;">万円</div>
+          <div style="font-size:11px;color:var(--ink-mid);">${d.count}件 / ${d.days}日</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-size:10px;letter-spacing:0.15em;color:var(--ink-light);text-transform:uppercase;margin-bottom:12px;">売上 バーチャート</div>
+      ${ranked.map((d,i) => `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="font-size:14px;">${medals[i]}</span>
+          <span style="font-size:12px;min-width:64px;color:${divColor(d.name)};font-weight:500;">${d.name}</span>
+          <div style="flex:1;height:20px;background:var(--parchment);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${Math.round(d.sales/maxSales*100)}%;background:${divColor(d.name)};border-radius:3px;transition:width 0.6s ease;opacity:0.85;"></div>
+          </div>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:15px;min-width:70px;text-align:right;">${fmt(d.sales)}円</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="background:var(--parchment);">
+            <th style="padding:8px 12px;text-align:left;font-size:10px;letter-spacing:0.1em;color:var(--ink-light);font-weight:400;text-transform:uppercase;">順位</th>
+            <th style="padding:8px 12px;text-align:left;font-size:10px;letter-spacing:0.1em;color:var(--ink-light);font-weight:400;text-transform:uppercase;">事業部</th>
+            <th style="padding:8px 12px;text-align:right;font-size:10px;letter-spacing:0.1em;color:var(--ink-light);font-weight:400;text-transform:uppercase;">売上</th>
+            <th style="padding:8px 12px;text-align:right;font-size:10px;letter-spacing:0.1em;color:var(--ink-light);font-weight:400;text-transform:uppercase;">粗利</th>
+            <th style="padding:8px 12px;text-align:right;font-size:10px;letter-spacing:0.1em;color:var(--ink-light);font-weight:400;text-transform:uppercase;">案件数</th>
+            <th style="padding:8px 12px;text-align:right;font-size:10px;letter-spacing:0.1em;color:var(--ink-light);font-weight:400;text-transform:uppercase;">入力日数</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${ranked.map((d,i) => `
+            <tr style="${i===0?'background:'+divColor(d.name)+'0D;':''}border-bottom:1px solid var(--border-light);">
+              <td style="padding:10px 12px;">${medals[i]}</td>
+              <td style="padding:10px 12px;"><span style="font-size:11px;padding:3px 10px;border-radius:99px;background:${divColor(d.name)}22;color:${divColor(d.name)};border:1px solid ${divColor(d.name)}44;">${d.name}</span></td>
+              <td style="padding:10px 12px;text-align:right;font-family:'Cormorant Garamond',serif;font-size:15px;">${fmt(d.sales)}</td>
+              <td style="padding:10px 12px;text-align:right;font-family:'Cormorant Garamond',serif;font-size:15px;color:${d.profit>=0?'var(--green)':'var(--red)'};">${fmt(d.profit)}</td>
+              <td style="padding:10px 12px;text-align:right;">${d.count}件</td>
+              <td style="padding:10px 12px;text-align:right;">${d.days}日</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ============================================================
+//  タブ切り替え
+// ============================================================
+function switchTab(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.getAttribute('onclick')?.includes("'"+name+"'")) t.classList.add('active');
+  });
+  if (name === 'summary' || name === 'history') updateSummary();
+  if (name === 'ranking') renderRanking();
+}
+
+// ============================================================
+//  トースト
+// ============================================================
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+// 起動
+init();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js");
+}
+// スタンドアロンモード（アプリとして起動）時にHOMEボタンを表示
+document.addEventListener("DOMContentLoaded", function() {
+  var isApp = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+  if (isApp) {
+    var btn = document.createElement("a");
+    btn.href = "./index.html";
+    btn.style.cssText = "position:fixed;top:12px;right:14px;z-index:9999;background:rgba(44,40,32,0.88);color:#D4B896;border:1px solid rgba(184,152,106,0.35);border-radius:99px;padding:5px 14px;font-size:11px;text-decoration:none;letter-spacing:0.1em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,0.3);";
+    btn.textContent = "⌂ HOME";
+    document.body.appendChild(btn);
+  }
+});
+</script>
+</body>
+</html>
